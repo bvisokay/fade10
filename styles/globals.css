@@ -1,9 +1,20 @@
+:root {
+  --themeColor: rgba(18, 248, 6, 0.892);
+  --primary: #1976d2;
+  --secondary: #04293a;
+  --tertiary: #343a40;
+  --cuatro: #064663;
+  --lightText: #e8ebe9;
+  --darkText: #333;
+  --bg-dark: #2a2b2e;
+  --wrapper-width: 800px;
+}
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 a {
@@ -15,12 +26,87 @@ a {
   box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: white;
-    background: black;
-  }
+.layout-container {
+  display: flex;
+  min-height: 100%;
+  min-height: 100vh;
+  flex-direction: column;
+  //border: 1px solid red;
+  margin: 0 auto;
+  position: relative;
+}
+
+.wrapper {
+  max-width: var(--wrapper-width);
+  margin: 0 auto;
+}
+
+header {
+  background-color: #282c34;
+  padding: 1rem;
+  border-bottom: 2px solid var(--primary);
+}
+
+main {
+  flex: 1;
+  width: 100%;
+  padding: 1rem;
+}
+
+footer {
+  background-color: var(--primary);
+  padding: 0.23rem;
+  color: white;
+  box-shadow: 0px -2px 4px -1px rgb(0 0 0/ 10%), 0px -4px 5px 0px rgb(0 0 0/ 7%), 0px -1px 10px 0px rgb(0 0 0/ 6%);
+}
+
+header .primary-nav {
+  display: flex;
+  align-items: center;
+}
+
+header .primary-nav a {
+  font-size: 1.25rem;
+  padding: 0.25rem 1rem 0.45rem 1rem;
+  border: 2px solid var(--themeColor);
+  border-bottom: 4px solid var(--themeColor);
+  transform: skew(3deg, 0);
+}
+
+header .primary-nav a:hover {
+  border-bottom: 4px solid var(--cuatro);
+}
+
+table {
+  border: 1px dotted var(--primary);
+}
+
+table.testing td {
+  border: 1px dotted salmon;
+}
+
+th {
+  background-color: var(--secondary);
+  padding: 10px;
+}
+
+td {
+  padding: 10px;
+}
+
+hr {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 4px solid var(--primary);
+  border-radius: 0;
+  margin-bottom: 1rem;
+}
+
+.primary-color {
+  color: var(--primary);
+}
+
+.strong {
+  font-weight: bold;
 }
