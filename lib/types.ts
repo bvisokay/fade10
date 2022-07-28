@@ -18,6 +18,7 @@ export type QueryResponseType = {
 
 export type TradingDayType = {
   date: string
+  formattedDate?: Date
   rangeHigh: number | string
   rangeLow: number | string
   dirSignal: string | null

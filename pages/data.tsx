@@ -6,7 +6,7 @@ import { Typography } from "@mui/material"
 import { useEffect, useState } from "react"
 import executeQuery from "../lib/db"
 // types
-import { TradingDayType, QueryResponseType, DataRowType } from "../lib/types"
+import { QueryResponseType, DataRowType, TradingDayType } from "../lib/types"
 // styles
 import { Highlight } from "../styles/GlobalComponents"
 
@@ -18,7 +18,19 @@ const Data = (props: PropTypes) => {
   const [spy, setSpy] = useState<TradingDayType[]>([])
 
   useEffect(() => {
-    setSpy(props.spy)
+    const datedAndSortedSpy = props.spy
+      .map(item => {
+        item.formattedDate = new Date(item.date)
+        return { ...item }
+      })
+      .sort((a, b) => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        if (a.formattedDate! > b.formattedDate!) return -1
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        if (a.formattedDate! < b.formattedDate!) return 1
+        else return 0
+      })
+    setSpy(datedAndSortedSpy)
     //eslint-disable-next-line
   }, [])
 
@@ -35,16 +47,10 @@ const Data = (props: PropTypes) => {
 
   let rows: GridRowsProp = []
 
-  rows = spy
-    .sort((a, b) => {
-      if (a.date > b.date) return 1
-      if (a.date < b.date) return -1
-      else return 0
-    })
-    .map((item, index) => {
-      const date = new Date(item.date)
-      return { id: index + 1, col1: `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`, col2: item.tgtHit === "1" ? "Yes" : typeof item.tgtHit === "object" ? "n/a" : "No", col3: item.rangeHigh, col4: item.rangeLow, col5: typeof item.rangeHigh === "number" && typeof item.rangeLow === "number" ? Math.round((item.rangeHigh - item.rangeLow) * 100) / 100 : "", col6: item.dirSignal !== "NULL" ? item.dirSignal : "n/a", col7: item.signalTime ? item.signalTime.slice(0, 5) : "n/a", col8: item.tgtHitTime ? item.tgtHitTime?.slice(0, 5) : "n/a" }
-    })
+  rows = spy.map((item, index) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return { id: index + 1, col1: `${item.formattedDate!.getMonth() + 1}/${item.formattedDate!.getDate()}/${item.formattedDate!.getFullYear()}`, col2: item.tgtHit === "1" ? "Yes" : typeof item.tgtHit === "object" ? "n/a" : "No", col3: item.rangeHigh, col4: item.rangeLow, col5: typeof item.rangeHigh === "number" && typeof item.rangeLow === "number" ? Math.round((item.rangeHigh - item.rangeLow) * 100) / 100 : "", col6: item.dirSignal !== "NULL" ? item.dirSignal : "n/a", col7: item.signalTime ? item.signalTime.slice(0, 5) : "n/a", col8: item.tgtHitTime ? item.tgtHitTime?.slice(0, 5) : "n/a" }
+  })
 
   if (!spy.length) {
     return <p>Loading...</p>
