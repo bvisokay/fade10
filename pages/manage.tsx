@@ -1,5 +1,5 @@
 import { useImmerReducer } from "use-immer"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import styled from "@emotion/styled"
 import { TradingDayType, ResponseType } from "../lib/types"
 import { getSession } from "next-auth/react"
@@ -33,7 +33,7 @@ const Form = styled.form`
   }
 `
 
-type AddDataActionTypes = { type: "dateCheck"; value: string } | { type: "rangeHighCheck"; value: string } | { type: "rangeLowCheck"; value: string } | { type: "dirSignalCheck"; value: string } | { type: "signalTimeCheck"; value: string } | { type: "tgtHitCheck"; value: string } | { type: "tgtHitTimeCheck"; value: string } | { type: "notesCheck"; value: string } | { type: "submitCount"; value: number } | { type: "isSaving"; value: boolean } | { type: "submitForm" }
+type AddDataActionTypes = { type: "dateCheck"; value: string } | { type: "rangeHighCheck"; value: string } | { type: "rangeLowCheck"; value: string } | { type: "dirSignalCheck"; value: string } | { type: "signalTimeCheck"; value: string } | { type: "tgtHitCheck"; value: string } | { type: "tgtHitTimeCheck"; value: string } | { type: "notesCheck"; value: string } | { type: "submitCount"; value: number } | { type: "isSaving"; value: boolean } | { type: "submitForm" } | { type: "clearFields" }
 
 type InitialStateTypes = {
   date: {
@@ -224,11 +224,22 @@ function submitDataReducer(draft: InitialStateTypes, action: AddDataActionTypes)
         draft.submitCount++
       }
       return
+    case "clearFields":
+      draft.date.value = ""
+      draft.rangeHigh.value = ""
+      draft.rangeLow.value = ""
+      draft.dirSignal.value = ""
+      draft.signalTime.value = ""
+      draft.tgtHit.value = ""
+      draft.tgtHitTime.value = ""
+      draft.notes.value = ""
+      return
   }
 }
 
 const Manage = () => {
   const [state, dispatch] = useImmerReducer(submitDataReducer, initialState)
+  const dateInputRef = useRef<HTMLInputElement>(null)
 
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault()
@@ -262,6 +273,10 @@ const Manage = () => {
           const data = (await response.json()) as ResponseType
           if (data.message === "success") {
             // clear form and show success message
+            dispatch({ type: "clearFields" })
+            if (dateInputRef && dateInputRef.current) {
+              dateInputRef.current.focus()
+            }
           }
         } catch (err) {
           throw { message: "Error", errors: err }
@@ -283,6 +298,7 @@ const Manage = () => {
           <label>Date</label>
           <input
             type="date"
+            ref={dateInputRef}
             value={state.date.value}
             onChange={e => {
               dispatch({ type: "dateCheck", value: e.target.value })
