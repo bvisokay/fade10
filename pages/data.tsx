@@ -48,8 +48,9 @@ const Data = (props: PropTypes) => {
   let rows: GridRowsProp = []
 
   rows = spy.map((item, index) => {
+    console.log(item)
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return { id: index + 1, col1: `${item.formattedDate!.getMonth() + 1}/${item.formattedDate!.getUTCDate()}/${item.formattedDate!.getFullYear()}`, col2: item.tgtHit === "1" ? "Yes" : typeof item.tgtHit === "object" ? "n/a" : "No", col3: item.rangeHigh, col4: item.rangeLow, col5: typeof item.rangeHigh === "number" && typeof item.rangeLow === "number" ? Math.round((item.rangeHigh - item.rangeLow) * 100) / 100 : "", col6: item.dirSignal !== "NULL" ? item.dirSignal : "n/a", col7: item.signalTime ? item.signalTime.slice(0, 5) : "n/a", col8: item.tgtHitTime ? item.tgtHitTime?.slice(0, 5) : "n/a" }
+    return { id: index + 1, col1: `${item.formattedDate!.getMonth() + 1}/${item.formattedDate!.getUTCDate()}/${item.formattedDate!.getFullYear()}`, col2: parseInt(item.tgtHit) === 1 ? "Yes" : typeof item.tgtHit === "object" ? "n/a" : "No", col3: item.rangeHigh, col4: item.rangeLow, col5: typeof item.rangeHigh === "number" && typeof item.rangeLow === "number" ? Math.round((item.rangeHigh - item.rangeLow) * 100) / 100 : "", col6: item.dirSignal !== "NULL" ? item.dirSignal : "n/a", col7: item.signalTime ? item.signalTime.slice(0, 5) : "n/a", col8: item.tgtHitTime ? item.tgtHitTime?.slice(0, 5) : "n/a" }
   })
 
   if (!spy.length) {
