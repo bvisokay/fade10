@@ -28,6 +28,18 @@ export type TradingDayType = {
   notes: string | null
 }
 
+export type TradingDay2Type = {
+  date: string
+  formattedDate?: Date
+  rangeHigh: number | string
+  rangeLow: number | string
+  dirSignal: string | null
+  signalTime: string | null
+  tgtHit: number | null
+  tgtHitTime: string | null
+  notes: string | null
+}
+
 export type DataRowType = {
   date: string
   rangehigh: number | string
