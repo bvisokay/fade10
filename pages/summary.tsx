@@ -27,7 +27,7 @@ const TitleArea = styled.div`
 `
 
 const Summary = (props: PropTypes) => {
-  const periods = [5, 20]
+  const periods = [5, 20, 60]
   const [spy, setSpy] = useState<TradingDay2Type[]>([])
 
   useEffect(() => {
@@ -89,6 +89,9 @@ const Summary = (props: PropTypes) => {
       <hr />
 
       {periods.map((period, index) => {
+        if (period > spy.length) {
+          period = spy.length
+        }
         const wins = getWinRate(period)
         const longRate = getLongSignalRate(period)
         return (
