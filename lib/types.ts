@@ -19,6 +19,7 @@ export type QueryResponseType = {
 export type TradingDayType = {
   date: string
   formattedDate?: Date
+
   rangeHigh: number | string
   rangeLow: number | string
   dirSignal: string | null
@@ -31,6 +32,7 @@ export type TradingDayType = {
 export type TradingDay2Type = {
   date: string
   formattedDate?: Date
+  stringDate: string
   rangeHigh: number | string
   rangeLow: number | string
   dirSignal: string | null

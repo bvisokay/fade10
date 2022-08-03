@@ -1,14 +1,12 @@
 import { GetServerSidePropsContext } from "next"
 import { getSession } from "next-auth/react"
-import { Typography } from "@mui/material"
+import { Typography, Box } from "@mui/material"
 import { DataRowType, TradingDayType, TradingDay2Type, QueryResponseType } from "../lib/types"
 import executeQuery from "../lib/db"
 import { useEffect, useState } from "react"
-
-// charts
-import { Chart as ChartJS, LinearScale, PointElement, Tooltip, Legend } from "chart.js"
-import { Bubble } from "react-chartjs-2"
-ChartJS.register(LinearScale, PointElement, Tooltip, Legend)
+import BarChart from "../components/Charts/BarChart"
+import { breakpoints } from "../styles/breakpoints"
+import styled from "@emotion/styled"
 
 // styles
 import { Highlight } from "../styles/GlobalComponents"
@@ -17,132 +15,99 @@ type PropTypes = {
   spy: TradingDay2Type[]
 }
 
+const TitleArea = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+  @media ${breakpoints.sm} {
+    flex-direction: row;
+  }
+`
+
 const Summary = (props: PropTypes) => {
-  console.log(props.spy)
+  const periods = [5, 20]
   const [spy, setSpy] = useState<TradingDay2Type[]>([])
-  const [lastFive, setLastFive] = useState<number>()
-  const [lastTwenty, setLastTwenty] = useState<number>()
-  const [updatedDate, setUpdatedDate] = useState<Date | undefined>()
 
   useEffect(() => {
+    /* sort with oldest at the end */
     const datedAndSortedSpy = props.spy
       .map(item => {
         item.formattedDate = new Date(item.date)
+        item.stringDate = `${item.formattedDate.getMonth() + 1}/${item.formattedDate.getUTCDate()}/${item.formattedDate.getFullYear().toString().slice(-2)}`
         item.tgtHit = typeof item.tgtHit !== "object" ? item.tgtHit : -1
         return { ...item }
       })
       .sort((a, b) => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        if (a.formattedDate! > b.formattedDate!) return -1
+        if (a.formattedDate! > b.formattedDate!) return 1
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        if (a.formattedDate! < b.formattedDate!) return 1
+        if (a.formattedDate! < b.formattedDate!) return -1
         else return 0
       })
     setSpy(datedAndSortedSpy)
-    const updatedThroughDate = new Date(datedAndSortedSpy[0].date)
-    setUpdatedDate(updatedThroughDate)
-    // last 5 trading days
-    const lastFiveData = datedAndSortedSpy.slice(0, 5)
-    const lastFiveWinRate = lastFiveData.reduce((currentTotal, item) => {
-      if (item && item.tgtHit != null) {
-        return item.tgtHit + currentTotal
-      } else return 0 + currentTotal
-    }, 0)
-    setLastFive(lastFiveWinRate)
-    // last 20 trading days
-    const lastTwentyData = datedAndSortedSpy.slice(0, 20)
-    const lastTwentyWinRate = lastTwentyData.reduce((currentTotal, item) => {
-      if (item && item.tgtHit) {
-        return item.tgtHit + currentTotal
-      } else return 0 + currentTotal
-    }, 0)
-    setLastTwenty(lastTwentyWinRate)
 
     //eslint-disable-next-line
   }, [])
 
-  const options = {
-    elements: {
-      point: {
-        pointStyle: "circle"
-      }
-    },
-    labels: {
-      x: "Test"
-    },
-    scales: {
-      y: {
-        beginAtZero: false
-      },
-      x: {
-        beginAtZero: false
-      }
+  const getWinRate = (period: number) => {
+    if (spy.length) {
+      const results = spy.slice(period * -1).reduce((currentTotal, item) => {
+        if (typeof item.tgtHit !== "object") {
+          return item.tgtHit + currentTotal
+        } else return currentTotal
+      }, 0)
+      return results
+      //return period
+    } else {
+      return period * -1
     }
   }
 
-  // data: {x: number, y: number, r: number}
-  const ChartReadyData = spy
-    .sort((a, b) => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      if (a.formattedDate! < b.formattedDate!) return -1
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      if (a.formattedDate! > b.formattedDate!) return 1
-      else return 0
-    })
-    .map((item, index) => {
-      const date = new Date(item.date)
-      const tradingDate = `${date.getMonth() + 1}/${date.getUTCDate()}/${date.getFullYear()}`
-      console.log(tradingDate)
-      return {
-        x: index + 1 - spy.length,
-        y: typeof item.rangeHigh === "number" && typeof item.rangeLow === "number" ? (item.rangeHigh - item.rangeLow).toFixed(1) : 1,
-        r: !item.tgtHit ? 4 : 4.25
-      }
-    })
-
-  const data = {
-    datasets: [
-      {
-        label: "Trading Days (x days back)",
-        data: ChartReadyData,
-        backgroundColor: function (context) {
-          const index = context.dataIndex
-          const value = context.dataset.data[index]
-          return value % 2 === 0
-            ? "red" // draw negative values in red
-            : "dodgerBlue"
-        }
-      }
-    ]
+  const getLongSignalRate = (period: number) => {
+    const results = spy.slice(period * -1).reduce((currentTotal, item) => {
+      if (item.dirSignal !== "object" && item.dirSignal === "Long") {
+        return 1 + currentTotal
+      } else return currentTotal
+    }, 0)
+    return results
   }
 
   return (
     <>
-      <Typography variant="h4" gutterBottom component="div">
-        <Highlight color1="darkBlue" color2="dodgerBlue" style={{ padding: "0" }}>
-          Summary
-        </Highlight>
-      </Typography>
+      <TitleArea>
+        <Typography variant="h3" gutterBottom component="div">
+          <Highlight color1="darkBlue" color2="dodgerBlue" style={{ padding: "0" }}>
+            Summary
+          </Highlight>
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+          <em>Data updated through: {spy.length ? spy[spy.length - 1].stringDate : "Come again"}</em>
+        </Typography>
+      </TitleArea>
       <hr />
-      <Typography variant="body1" gutterBottom>
-        <strong>Data updated through:</strong>{" "}
-        {updatedDate && (
-          <>
-            {updatedDate.getMonth() + 1}/{updatedDate.getUTCDate()}/{updatedDate.getFullYear()}
-          </>
-        )}
-      </Typography>
 
-      <Typography variant="body1" gutterBottom>
-        <strong>Last 5 Trading Days: </strong>
-        {lastFive && lastFive >= 1 ? `${(lastFive / 5) * 100}% (${lastFive} of 5)` : ""}
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        <strong>Last 20 Trading Days: </strong>
-        {lastTwenty && lastTwenty >= 1 ? `${(lastTwenty / 20) * 100}% (${lastTwenty} of 5)` : ""}
-      </Typography>
-
-      <Bubble options={options} data={data} />
+      {periods.map((period, index) => {
+        const wins = getWinRate(period)
+        const longRate = getLongSignalRate(period)
+        return (
+          <Box mt={10} mb={10} key={index}>
+            <Typography mb={4} variant="h5">
+              <strong>Last {period} Trading Days</strong>
+              {/* {wins && wins >= 1 ? `${Math.round((wins / period) * 100)}% (${wins} of ${period})` : ""} */}
+            </Typography>
+            <Typography mb={4} variant="body1">
+              <strong>Hit Rate: </strong>
+              {wins && wins >= 1 ? `${Math.round((wins / period) * 100)}% (${wins} of ${period})` : ""}
+            </Typography>
+            <Typography mb={4} variant="body1">
+              <strong>Signal Rate: </strong>
+              {longRate && longRate >= 1 ? `${Math.round((longRate / period) * 100)}% Long (${longRate} of ${period})` : ""}
+            </Typography>
+            {spy.length && <BarChart chartData={spy} daysBack={period} />}
+          </Box>
+        )
+      })}
     </>
   )
 }
