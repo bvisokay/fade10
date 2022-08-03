@@ -35,7 +35,7 @@ const Summary = (props: PropTypes) => {
     const datedAndSortedSpy = props.spy
       .map(item => {
         item.formattedDate = new Date(item.date)
-        item.stringDate = `${item.formattedDate.getMonth() + 1}/${item.formattedDate.getUTCDate()}/${item.formattedDate.getFullYear().toString().slice(-2)}`
+        item.stringDate = `${item.formattedDate.getUTCMonth() + 1}/${item.formattedDate.getUTCDate()}/${item.formattedDate.getUTCFullYear().toString().slice(-2)}`
         item.tgtHit = typeof item.tgtHit !== "object" ? item.tgtHit : -1
         return { ...item }
       })
