@@ -5,6 +5,7 @@ import { DataRowType, TradingDayType, TradingDay2Type, QueryResponseType } from 
 import executeQuery from "../lib/db"
 import { useEffect, useState } from "react"
 import BarChart from "../components/Charts/BarChart"
+//import DoughnutChart from "../components/Charts/DoughnutChart"
 import { breakpoints } from "../styles/breakpoints"
 import styled from "@emotion/styled"
 
@@ -104,7 +105,16 @@ const Summary = (props: PropTypes) => {
               <strong>Signal Rate: </strong>
               {longRate && longRate >= 1 ? `${Math.round((longRate / period) * 100)}% Long (${longRate} of ${period})` : ""}
             </Typography>
-            {spy.length && <BarChart chartData={spy} daysBack={period} />}
+            {spy.length && (
+              <Box mt={3} mb={3}>
+                <BarChart chartData={spy} daysBack={period} />
+              </Box>
+            )}
+            {/*    {spy.length && (
+              <Box width={200} height={200} mt={3} mb={3}>
+                <DoughnutChart chartData={spy} daysBack={period} />
+              </Box>
+            )} */}
           </Box>
         )
       })}
