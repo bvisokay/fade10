@@ -29,11 +29,11 @@ const BarChart: React.FC<Props> = ({ chartData, daysBack }) => {
     labels: chartData.map(item => item.stringDate.slice(0, -3)),
     datasets: [
       {
-        label: "Opening Range, (fill color is tgt hit or not, border color is long/short)",
+        label: "Opening Range",
         data: chartData.map(item => (typeof item.rangeHigh === "number" && typeof item.rangeLow === "number" ? item.rangeHigh - item.rangeLow : 0)),
         backgroundColor: chartData.map(item => (typeof item.tgtHit !== "object" && item.tgtHit < 1 ? "#e84393" : "#00cec9")),
         borderColor: chartData.map(item => (typeof item.dirSignal !== "object" && item.dirSignal === "Short" ? "#fd79a8" : "#0984e3")),
-        borderWidth: daysBack <= 5 ? 4 : 2
+        borderWidth: daysBack <= 5 ? 4 : daysBack > 20 ? 0 : 2
       }
     ]
   }

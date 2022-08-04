@@ -27,7 +27,7 @@ const TitleArea = styled.div`
 `
 
 const Summary = (props: PropTypes) => {
-  const periods = [5, 20, 60]
+  const periods = [5, 20, 60, 200]
   const [spy, setSpy] = useState<TradingDay2Type[]>([])
 
   useEffect(() => {
