@@ -2,6 +2,7 @@
 
 # dev
 0_README.md
+/pages/cleanse.tsx
 
 # dependencies
 /node_modules
