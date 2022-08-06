@@ -84,7 +84,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const item = cleanedPayload[0]
       //eslint-disable-next-line
-      const response = (await executeQuery(`INSERT INTO spy (date, rangehigh, rangelow, dirsignal, signaltime, tgthit, tgthittime, notes, imagepath) VALUES ("${item?.date}", "${item?.rangehigh}", "${item?.rangelow}", "${item?.dirsignal}", ${item?.signaltime !== "NULL" ? `"${item?.signaltime}"` : item?.signaltime}, ${item?.tgthit === "Yes" ? "1" : item?.tgthit === "No" ? "0" : item?.tgthit}, ${item?.tgthittime !== "NULL" ? `"${item?.tgthittime}"` : item?.tgthittime}, ${item?.notes !== "NULL" ? `"${item?.notes}"` : item?.notes}, ${item?.imagepath !== "NULL" ? `"${item?.imagepath}"` : item?.imagepath})`)) as QueryResponseType
+      const response = (await executeQuery(`INSERT INTO spy (date, rangehigh, rangelow, dirsignal, signaltime, tgthit, tgthittime, notes, imagepath) VALUES ("${item?.date}", "${item?.rangehigh}", "${item?.rangelow}", ${item?.dirsignal !== "NULL" ? `"${item?.dirsignal}"` : item?.dirsignal}, ${item?.signaltime !== "NULL" ? `"${item?.signaltime}"` : item?.signaltime}, ${item?.tgthit === "Yes" ? "1" : item?.tgthit === "No" ? "0" : item?.tgthit}, ${item?.tgthittime !== "NULL" ? `"${item?.tgthittime}"` : item?.tgthittime}, ${item?.notes !== "NULL" ? `"${item?.notes}"` : item?.notes}, ${item?.imagepath !== "NULL" ? `"${item?.imagepath}"` : item?.imagepath})`)) as QueryResponseType
       if (response.error) {
         //eslint-disable-next-line
         console.log(`Response from the DB Operation: ${response.error}`)
