@@ -11,9 +11,9 @@ const db = mysql({
   }
 })
 
-export default async function executeQuery(query: string) {
+export default async function executeQuery(query: string, payload?: string) {
   try {
-    const results = await db.query(query)
+    const results = await db.query(query, payload)
     await db.end()
     return results
   } catch (error) {
