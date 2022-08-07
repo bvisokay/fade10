@@ -4,6 +4,7 @@ import Layout from "../components/Layout"
 import Head from "next/head"
 import { SessionProvider } from "next-auth/react"
 //import CssBaseline from "@mui/material/CssBaseline"
+import { ManageContextProvider } from "../store/ManageContext"
 
 export const SITENAME = "Fade10"
 import { Global } from "@emotion/react"
@@ -20,7 +21,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         {/*  <CssBaseline /> */}
         <Global styles={GlobalStyles} />
         <Layout>
-          <Component {...pageProps} />
+          <ManageContextProvider>
+            <Component {...pageProps} />
+          </ManageContextProvider>
         </Layout>
       </SessionProvider>
     </>

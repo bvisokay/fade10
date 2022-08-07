@@ -1,11 +1,11 @@
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js"
 import { Bar } from "react-chartjs-2"
-import { TradingDay2Type } from "../../lib/types"
+import { DataPointType } from "../../lib/types"
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 interface Props {
-  chartData: TradingDay2Type[]
+  chartData: DataPointType[]
   daysBack: number
 }
 
@@ -26,7 +26,7 @@ const BarChart: React.FC<Props> = ({ chartData, daysBack }) => {
   }
 
   const data = {
-    labels: chartData.map(item => item.stringDate.slice(0, -3)),
+    labels: chartData.map(item => item.displayDate),
     datasets: [
       {
         label: "Opening Range",

@@ -1,3 +1,21 @@
+export interface ClientReadyItemType {
+  date: string
+  displayDate: string
+  rangeHigh: number | string
+  rangeLow: number | string
+  dirSignal: string | number
+  signalTime: string
+  tgtHit: string
+  tgtHitTime: string
+  notes: string
+}
+
+export interface FetchAllDataResultType {
+  message: string
+  data?: DataPointType[]
+  errors?: unknown | string
+}
+
 export interface RegAttemptTypes {
   username: string
   email: string
@@ -16,10 +34,21 @@ export type QueryResponseType = {
   error: unknown
 }
 
+export type DataPointType = {
+  date: string
+  displayDate: string
+  rangeHigh: number
+  rangeLow: number
+  dirSignal: string
+  signalTime: string
+  tgtHit: string | number
+  tgtHitTime: string
+  notes: string
+}
+
 export type TradingDayType = {
   date: string
   formattedDate?: Date
-
   rangeHigh: number | string
   rangeLow: number | string
   dirSignal: string | null
@@ -42,14 +71,61 @@ export type TradingDay2Type = {
   notes: string | null
 }
 
+export type TradingDay3Type = {
+  date: string
+  formattedDate: Date
+  rangeHigh: number | string
+  rangeLow: number | string
+  dirSignal: string | null
+  signalTime: string | null
+  tgtHit: string | number | null
+  tgtHitTime: string | null
+  notes: string | null
+}
+
+export type EditedTradingDayType = {
+  date: string
+  formattedDate?: Date
+  rangeHigh: number | string
+  rangeLow: number | string
+  dirSignal: string | null
+  signalTime: string | null
+  tgtHit: string | number | null
+  tgtHitTime: string | null
+  notes: string | null
+}
+
+export type ExistingTradingDayType = {
+  date: string
+  formattedDate?: Date
+  rangeHigh: number | string
+  rangeLow: number | string
+  dirSignal: string | null
+  signalTime: string | null
+  tgtHit: string | number | null
+  tgtHitTime: string | null
+  notes: string | null
+}
+
 export type DataRowType = {
   date: string
-  rangehigh: number | string
-  rangelow: number | string
+  rangehigh: number
+  rangelow: number
   dirsignal: string | null
   signaltime: string | null
   tgthit: string | null
   tgthittime: string | null
   notes: string | null
   imagepath: null
+}
+
+export type DataPointFormType = {
+  date: string
+  rangeHigh: number | string
+  rangeLow: number | string
+  dirSignal: string
+  signalTime: string
+  tgtHit: string
+  tgtHitTime: string
+  notes: string
 }

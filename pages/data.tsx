@@ -2,41 +2,29 @@ import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid"
 import { GetServerSidePropsContext } from "next"
 import { getSession } from "next-auth/react"
 import { Typography } from "@mui/material"
-
 import { useEffect, useState } from "react"
-import executeQuery from "../lib/db"
+import { fetchAllData } from "../lib/util"
 // types
-import { QueryResponseType, DataRowType, TradingDayType } from "../lib/types"
+import { DataPointType, FetchAllDataResultType } from "../lib/types"
 // styles
 import { Highlight } from "../styles/GlobalComponents"
 
 type PropTypes = {
-  spy: TradingDayType[]
+  spy: DataPointType[]
 }
 
-const Data = (props: PropTypes) => {
-  const [spy, setSpy] = useState<TradingDayType[]>([])
+const Data: React.FC<PropTypes> = props => {
+  console.log(props.spy)
+
+  const [spy, setSpy] = useState<DataPointType[]>([])
 
   useEffect(() => {
-    const datedAndSortedSpy = props.spy
-      .map(item => {
-        item.formattedDate = new Date(item.date)
-        return { ...item }
-      })
-      .sort((a, b) => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        if (a.formattedDate! > b.formattedDate!) return -1
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        if (a.formattedDate! < b.formattedDate!) return 1
-        else return 0
-      })
-    setSpy(datedAndSortedSpy)
-    //eslint-disable-next-line
+    setSpy(props.spy)
   }, [])
 
   const columns: GridColDef[] = [
     { field: "col1", headerName: "Date", width: 100 },
-    { field: "col2", headerName: "Tgt Hit", width: 100 },
+    { field: "col2", headerName: "Tgt Hit", width: 65 },
     { field: "col3", headerName: "Range High", width: 100 },
     { field: "col4", headerName: "Range Low", width: 100 },
     { field: "col5", headerName: "Price Range", width: 100 },
@@ -48,8 +36,18 @@ const Data = (props: PropTypes) => {
   let rows: GridRowsProp = []
 
   rows = spy.map((item, index) => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return { id: index + 1, col1: `${item.formattedDate!.getUTCMonth() + 1}/${item.formattedDate!.getUTCDate()}/${item.formattedDate!.getUTCFullYear()}`, col2: parseInt(item.tgtHit!) === 1 ? "Yes" : typeof item.tgtHit === "object" ? "n/a" : "No", col3: item.rangeHigh, col4: item.rangeLow, col5: typeof item.rangeHigh === "number" && typeof item.rangeLow === "number" ? Math.round((item.rangeHigh - item.rangeLow) * 100) / 100 : "", col6: item.dirSignal !== "NULL" ? item.dirSignal : "n/a", col7: item.signalTime ? item.signalTime.slice(0, 5) : "n/a", col8: item.tgtHitTime ? item.tgtHitTime?.slice(0, 5) : "n/a" }
+    return {
+      id: index + 1, //
+      col1: item.displayDate,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      col2: item.tgtHit === 1 ? "Yes" : typeof item.tgtHit === "object" ? "n/a" : "No",
+      col3: item.rangeHigh.toFixed(2),
+      col4: item.rangeLow.toFixed(2),
+      col5: typeof item.rangeHigh === "number" && typeof item.rangeLow === "number" ? (Math.round((item.rangeHigh - item.rangeLow) * 100) / 100).toFixed(2) : "",
+      col6: item.dirSignal !== "NULL" ? item.dirSignal : "n/a",
+      col7: item.signalTime ? item.signalTime.slice(0, 5) : "n/a",
+      col8: item.tgtHitTime ? item.tgtHitTime?.slice(0, 5) : "n/a"
+    }
   })
 
   if (!spy.length) {
@@ -85,42 +83,22 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   }
 
-  try {
-    const response = (await executeQuery(`SELECT * FROM spy`)) as QueryResponseType
+  const result: FetchAllDataResultType = await fetchAllData()
 
-    if (response.error) {
-      //eslint-disable-next-line
-      console.log(`Error from DB operation: ${response.error}`)
-      throw new Error()
-    }
-    let cleanedResponse: TradingDayType[] = []
-
-    if (Array.isArray(response)) {
-      cleanedResponse = response.map((item: DataRowType) => {
-        return {
-          date: item.date.toString(),
-          rangeHigh: item.rangehigh,
-          rangeLow: item.rangelow,
-          dirSignal: item.dirsignal,
-          signalTime: item.signaltime,
-          tgtHit: item.tgthit,
-          tgtHitTime: item.tgthittime,
-          notes: item.notes
-        }
-      })
-    }
-
+  if (result.message !== "success") {
     return {
       props: {
-        spy: cleanedResponse
+        session,
+        spy: []
       }
     }
-  } catch (err) {
-    //eslint-disable-next-line
-    console.log(`There was an error: ${err}`)
+  }
+
+  if (result.message === "success") {
     return {
       props: {
-        spy: []
+        session,
+        spy: result.data
       }
     }
   }

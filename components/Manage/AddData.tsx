@@ -1,8 +1,9 @@
 import { useImmerReducer } from "use-immer"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useContext } from "react"
 import styled from "@emotion/styled"
-import { TradingDayType, ResponseType } from "../lib/types"
-import { BtnWide } from "../styles/GlobalComponents"
+import { ResponseType, DataPointFormType, DataPointType } from "../../lib/types"
+import { BtnWide } from "../../styles/GlobalComponents"
+import { ManageDispatchContext } from "../../store/ManageContext"
 
 const Form = styled.form`
   border: 1px solid #999;
@@ -31,7 +32,7 @@ const Form = styled.form`
   }
 `
 
-type AddDataActionTypes = { type: "dateCheck"; value: string } | { type: "rangeHighCheck"; value: string } | { type: "rangeLowCheck"; value: string } | { type: "dirSignalCheck"; value: string } | { type: "signalTimeCheck"; value: string } | { type: "tgtHitCheck"; value: string } | { type: "tgtHitTimeCheck"; value: string } | { type: "notesCheck"; value: string } | { type: "submitCount"; value: number } | { type: "isSaving"; value: boolean } | { type: "submitForm" } | { type: "clearFields" }
+type AddDataActionTypes = { type: "dateCheck"; value: string } | { type: "rangeHighCheck"; value: string | number } | { type: "rangeLowCheck"; value: string | number } | { type: "dirSignalCheck"; value: string } | { type: "signalTimeCheck"; value: string } | { type: "tgtHitCheck"; value: string } | { type: "tgtHitTimeCheck"; value: string } | { type: "notesCheck"; value: string } | { type: "submitCount"; value: number } | { type: "isSaving"; value: boolean } | { type: "submitForm" } | { type: "clearFields" }
 
 type InitialStateTypes = {
   date: {
@@ -238,6 +239,7 @@ function submitDataReducer(draft: InitialStateTypes, action: AddDataActionTypes)
 const AddData: React.FC = () => {
   const [state, dispatch] = useImmerReducer(submitDataReducer, initialState)
   const dateInputRef = useRef<HTMLInputElement>(null)
+  const manageDispatch = useContext(ManageDispatchContext)
 
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault()
@@ -259,7 +261,7 @@ const AddData: React.FC = () => {
         }
       ]
 
-      const saveNewDataPoint = async (newDataPoint: TradingDayType[]) => {
+      const saveNewDataPoint = async (newDataPoint: DataPointFormType[]) => {
         try {
           const response = await fetch("/api/create-item", {
             method: "POST",
@@ -268,19 +270,21 @@ const AddData: React.FC = () => {
               "Content-Type": "application/json"
             }
           })
-          const data = (await response.json()) as ResponseType
+          const data = (await response.json()) as ResponseType | { message: string; errors?: string; data: DataPointType }
           if (data.message === "success") {
             // clear form and show success message
             dispatch({ type: "clearFields" })
             if (dateInputRef && dateInputRef.current) {
               dateInputRef.current.focus()
             }
+            console.log(data.data)
+            if (data.data && typeof data.data !== "string") manageDispatch({ type: "addItem", value: data.data })
           }
         } catch (err) {
           throw { message: "Error", errors: err }
         }
       }
-      void saveNewDataPoint(newDataPoint)
+      void saveNewDataPoint([...newDataPoint])
       return () => {
         // add abort signal
       }
