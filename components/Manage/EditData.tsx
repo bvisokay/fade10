@@ -1,6 +1,9 @@
 import { useImmerReducer } from "use-immer"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useContext } from "react"
 import { EditedTradingDayType, DataPointType, ResponseType } from "../../lib/types"
+import { ManageDispatchContext } from "../../store/ManageContext"
+
+// mui
 import Button from "@mui/material/Button"
 import TextField from "@mui/material/TextField"
 import MenuItem from "@mui/material/MenuItem"
@@ -188,7 +191,7 @@ const EditData: React.FC<EditDataProps> = ({ item }) => {
       message: ""
     },
     tgtHit: {
-      value: item.tgtHit,
+      value: item.tgtHit === 1 || item.tgtHit === "Yes" ? "Yes" : item.tgtHit === 0 || item.tgtHit === "No" ? "No" : "n/a",
       hasErrors: false,
       message: ""
     },
@@ -209,6 +212,7 @@ const EditData: React.FC<EditDataProps> = ({ item }) => {
 
   const [state, dispatch] = useImmerReducer(submitDataReducer, initialState)
   const dateInputRef = useRef<HTMLInputElement>(null)
+  const manageDispatch = useContext(ManageDispatchContext)
 
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault()
@@ -241,12 +245,13 @@ const EditData: React.FC<EditDataProps> = ({ item }) => {
           })
           const data = (await response.json()) as ResponseType
           if (data.message === "success") {
-            alert("sucess")
+            alert("success")
             // clear form and show success message
             /* dispatch({ type: "clearFields" })
             if (dateInputRef && dateInputRef.current) {
               dateInputRef.current.focus()
             } */
+            // if (data.data) manageDispatch({ type: "updateItem", value: data.data })
           }
         } catch (err) {
           throw { message: "Error", errors: err }

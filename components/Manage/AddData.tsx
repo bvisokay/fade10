@@ -1,9 +1,14 @@
 import { useImmerReducer } from "use-immer"
 import { useEffect, useRef, useContext } from "react"
-import styled from "@emotion/styled"
 import { ResponseType, DataPointFormType, DataPointType } from "../../lib/types"
-import { BtnWide } from "../../styles/GlobalComponents"
 import { ManageDispatchContext } from "../../store/ManageContext"
+
+import styled from "@emotion/styled"
+
+// mui
+import Button from "@mui/material/Button"
+import TextField from "@mui/material/TextField"
+import MenuItem from "@mui/material/MenuItem"
 
 const Form = styled.form`
   border: 1px solid #999;
@@ -11,25 +16,6 @@ const Form = styled.form`
   margin: 3rem auto 3rem auto;
   max-width: 450px;
   padding: 1rem 0.5rem;
-
-  .form-control {
-    //border: 1px solid dodgerblue;
-    margin-bottom: 0.5rem;
-    padding: 0.5rem 0.25rem;
-  }
-  label {
-    display: block;
-    font-size: 0.8rem;
-    padding-bottom: 0.25rem;
-    font-weight: bold;
-    color: var(--primary);
-  }
-  input,
-  select,
-  option {
-    //border-radius: 0.23rem;
-    padding: 0.5rem;
-  }
 `
 
 type AddDataActionTypes = { type: "dateCheck"; value: string } | { type: "rangeHighCheck"; value: string | number } | { type: "rangeLowCheck"; value: string | number } | { type: "dirSignalCheck"; value: string } | { type: "signalTimeCheck"; value: string } | { type: "tgtHitCheck"; value: string } | { type: "tgtHitTimeCheck"; value: string } | { type: "notesCheck"; value: string } | { type: "submitCount"; value: number } | { type: "isSaving"; value: boolean } | { type: "submitForm" } | { type: "clearFields" }
@@ -293,97 +279,143 @@ const AddData: React.FC = () => {
   }, [state.submitCount])
 
   return (
-    <Form onSubmit={submitHandler}>
-      <h3>Add Data</h3>
-      <div className="form-control">
-        <label>Date</label>
-        <input
+    <>
+      <Form onSubmit={submitHandler}>
+        <h3>Add Data</h3>
+        <TextField
+          InputLabelProps={{ shrink: true }}
+          margin="normal"
+          fullWidth
+          hiddenLabel
+          size="small"
+          id="outlined-basic"
+          label="Date"
+          aria-label="date"
+          variant="outlined"
           type="date"
-          ref={dateInputRef}
+          inputRef={dateInputRef}
           value={state.date.value}
           onChange={e => {
             dispatch({ type: "dateCheck", value: e.target.value })
           }}
         />
-      </div>
-      <div className="form-control">
-        <label>Range High</label>
-        <input
+        <TextField
+          margin="normal"
+          fullWidth
+          hiddenLabel
+          size="small"
+          id="outlined-basic"
+          label="Range High"
+          variant="outlined"
           type="number"
           value={state.rangeHigh.value}
           onChange={e => {
             dispatch({ type: "rangeHighCheck", value: e.target.value })
           }}
         />
-      </div>
-      <div className="form-control">
-        <label>Range Low</label>
-        <input
+        <TextField
+          margin="normal"
+          fullWidth
+          hiddenLabel
+          size="small"
+          id="outlined-basic"
+          label="Range Low"
+          variant="outlined"
           type="number"
           value={state.rangeLow.value}
           onChange={e => {
             dispatch({ type: "rangeLowCheck", value: e.target.value })
           }}
         />
-      </div>
-      <div className="form-control">
-        <label>Signal</label>
-        <select
+        <TextField
+          margin="normal"
+          fullWidth
+          hiddenLabel
+          size="small"
+          id="outlined-select-currency"
+          select
+          label="Signal"
           value={state.dirSignal.value}
           onChange={e => {
             dispatch({ type: "dirSignalCheck", value: e.target.value })
           }}
         >
-          <option></option>
-          <option>Long</option>
-          <option>Short</option>
-        </select>
-      </div>
-      <div className="form-control">
-        <label>Signal Time</label>
-        <input
+          <MenuItem value="">
+            <em>Select</em>
+          </MenuItem>
+          <MenuItem value={"Long"}>{"Long"}</MenuItem>
+          <MenuItem value={"Short"}>{"Short"}</MenuItem>
+        </TextField>
+        <TextField
+          InputLabelProps={{ shrink: true }}
+          margin="normal"
+          fullWidth
+          hiddenLabel
+          size="small"
+          id="outlined-basic"
+          label="Signal Time"
+          aria-label="Signal time"
+          variant="outlined"
           type="time"
           value={state.signalTime.value}
           onChange={e => {
             dispatch({ type: "signalTimeCheck", value: e.target.value })
           }}
         />
-      </div>
-      <div className="form-control">
-        <label>Tgt Hit</label>
-        <select
+        <TextField
+          margin="normal"
+          fullWidth
+          hiddenLabel
+          size="small"
+          id="outlined-select-currency"
+          select
+          label="Target Hit"
           value={state.tgtHit.value}
           onChange={e => {
             dispatch({ type: "tgtHitCheck", value: e.target.value })
           }}
         >
-          <option></option>
-          <option>Yes</option>
-          <option>No</option>
-        </select>
-      </div>
-      <div className="form-control">
-        <label>Tgt Hit Time</label>
-        <input
+          <MenuItem value="">
+            <em>Select</em>
+          </MenuItem>
+          <MenuItem value={"Yes"}>{"Yes"}</MenuItem>
+          <MenuItem value={"No"}>{"No"}</MenuItem>
+        </TextField>
+        <TextField
+          InputLabelProps={{ shrink: true }}
+          margin="normal"
+          fullWidth
+          hiddenLabel
+          size="small"
+          id="outlined-basic"
+          label="Target Hit Time"
+          aria-label="target hit time"
+          variant="outlined"
           type="time"
           value={state.tgtHitTime.value}
           onChange={e => {
             dispatch({ type: "tgtHitTimeCheck", value: e.target.value })
           }}
         />
-      </div>
-      <div className="form-control">
-        <label>Notes</label>
-        <input
+        <TextField
+          margin="normal"
+          fullWidth
+          hiddenLabel
+          size="small"
+          id="outlined-basic"
+          label="Notes"
+          variant="outlined"
           type="text"
           value={state.notes.value}
           onChange={e => {
             dispatch({ type: "notesCheck", value: e.target.value })
           }}
         />
-      </div>
-      <BtnWide>Submit</BtnWide>
-    </Form>
+        <Button sx={{ mt: 3, mb: 2 }} variant="contained" onClick={submitHandler}>
+          Submit
+        </Button>
+      </Form>
+    </>
   )
 }
 

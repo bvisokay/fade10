@@ -49,10 +49,10 @@ const AppDataGrid: React.FC = () => {
       id: index + 1, //
       date: item.displayDate,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      tgthit: item.tgtHit === 1 ? "Yes" : typeof item.tgtHit === "object" ? "n/a" : "No",
+      tgthit: item.tgtHit === 1 || item.tgtHit === "Yes" ? "Yes" : item.tgtHit === 0 || item.tgtHit === "No" ? "No" : "n/a",
       range: typeof item.rangeHigh === "number" && typeof item.rangeLow === "number" ? (Math.round((item.rangeHigh - item.rangeLow) * 100) / 100).toFixed(2) : "",
-      rangehigh: typeof item.rangeHigh === "number" ? item.rangeHigh.toFixed(2) : "",
-      rangelow: typeof item.rangeHigh === "number" ? item.rangeLow.toFixed(2) : "",
+      rangehigh: typeof item.rangeHigh === "number" ? (Math.round(item.rangeHigh * 100) / 100).toFixed(2) : "",
+      rangelow: typeof item.rangeHigh === "number" ? (Math.round(item.rangeLow * 100) / 100).toFixed(2) : "",
       signal: item.dirSignal !== "NULL" ? item.dirSignal : "n/a",
       signaltime: item.signalTime ? item.signalTime.slice(0, 5) : "n/a",
       tgthittime: item.tgtHitTime ? item.tgtHitTime?.slice(0, 5) : "n/a"

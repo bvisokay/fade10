@@ -92,8 +92,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         month: "2-digit",
         day: "2-digit"
       }),
-      rangeHigh: cleanedPayload[0]?.rangehigh && typeof cleanedPayload[0].rangehigh === "string" ? parseInt(cleanedPayload[0].rangehigh) : "",
-      rangeLow: cleanedPayload[0]?.rangelow && typeof cleanedPayload[0].rangelow === "string" ? parseInt(cleanedPayload[0].rangelow) : "",
+      rangeHigh: cleanedPayload[0]?.rangehigh && typeof cleanedPayload[0].rangehigh === "string" ? parseFloat(cleanedPayload[0].rangehigh) : "",
+      rangeLow: cleanedPayload[0]?.rangelow && typeof cleanedPayload[0].rangelow === "string" ? parseFloat(cleanedPayload[0].rangelow) : "",
       dirSignal: cleanedPayload[0]?.dirsignal && cleanedPayload[0].dirsignal !== "NULL" ? cleanedPayload[0].dirsignal : "n/a",
       signalTime: cleanedPayload[0]?.signaltime && cleanedPayload[0].signaltime !== "NULL" ? cleanedPayload[0].signaltime : "n/a",
       tgtHit: cleanedPayload[0]?.tgthit && cleanedPayload[0]?.tgthit !== "NULL" ? cleanedPayload[0].tgthit : "n/a",

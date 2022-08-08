@@ -16,6 +16,7 @@ const Manage: React.FC<PropTypes> = props => {
   const manageDispatch = useContext(ManageDispatchContext)
 
   useEffect(() => {
+    manageDispatch({ type: "removeAllItems" })
     manageDispatch({ type: "addMultipleItems", value: props.spy })
     //eslint-disable-next-line
   }, [])
