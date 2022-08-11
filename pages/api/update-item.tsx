@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/react"
-import { QueryResponseType, TradingDayType } from "../../lib/types"
+import { QueryResponseType, EditedTradingDayType, EditedTradingDayTypeForDb } from "../../lib/types"
 import executeQuery from "../../lib/db"
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -32,15 +32,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const rawPayload = req.body
 
     // Begin validation including swapping intentially empty fields to NULL
-    const cleanedPayload = rawPayload.map((item: TradingDayType) => {
-      if (item.date.toString() === "") {
+
+    // need to make sure something has changed and the propoerties that have changed made sense
+
+    const cleanedPayload = rawPayload.map((item: EditedTradingDayType | EditedTradingDayTypeForDb) => {
+      if (item.newDate.toString() === "") {
         return res.status(422).json({ message: "error", errors: "Date cannot be left blank" })
       }
       if (item.rangeHigh === "") {
-        return res.status(422).json({ message: "error", errors: "range high cannot be left blank" })
+        return res.status(422).json({ message: "error", errors: "Range high cannot be left blank" })
       }
       if (item.rangeLow === "") {
-        return res.status(422).json({ message: "error", errors: "range low cannot be left blank" })
+        return res.status(422).json({ message: "error", errors: "Range low cannot be left blank" })
       }
       if (item.rangeLow > item.rangeHigh) {
         return res.status(422).json({ message: "error", errors: "range low cannot be greater than range high" })
@@ -55,63 +58,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(422).json({ message: "error", errors: "signal time cannot be left blank" })
       }
       if (item.dirSignal === "") {
-        item.dirSignal = "NULL"
-        item.signalTime = "NULL"
-        item.tgtHit = "NULL"
-        item.tgtHitTime = "NULL"
+        item.dirSignal = null
+        item.signalTime = null
+        item.tgtHit = null
+        item.tgtHitTime = null
       }
       if (item.tgtHit === "No") {
-        item.tgtHitTime = "NULL"
+        item.tgtHitTime = null
       }
       if (item.notes === "") {
-        item.notes = "NULL"
+        item.notes = null
       }
 
       return {
-        date: item.date.toString(),
-        rangehigh: item.rangeHigh,
-        rangelow: item.rangeLow,
+        originaldate: item.originalDate,
+        newdate: item.newDate,
+        rangehigh: typeof item.rangeHigh === "string" ? (Math.round(parseFloat(item.rangeHigh) * 100) / 100).toFixed(2) : (Math.round(item.rangeHigh * 100) / 100).toFixed(2),
+        rangelow: typeof item.rangeLow === "string" ? (Math.round(parseFloat(item.rangeLow) * 100) / 100).toFixed(2) : (Math.round(item.rangeLow * 100) / 100).toFixed(2),
         dirsignal: item.dirSignal,
         signaltime: item.signalTime,
         tgthit: item.tgtHit,
         tgthittime: item.tgtHitTime,
         notes: item.notes,
-        imagepath: "NULL"
+        imagepath: null
       }
     })
 
     // Begin DB work
     try {
       const item = cleanedPayload[0]
-      //eslint-disable-next-line
-      const response = await executeQuery(
-        `UPDATE spy SET
-      date = ?, 
-      rangehigh = ?,
-      rangelow = ?,
-      dirsignal = ?,
-      signaltime = ?,
-      tgthit = ?,
-      tgthittime = ?,
-      notes = ?,
-      imagepath
-      WHERE data=?`,
+      if (!item) throw { message: "error" }
 
-        `[
-        ${
-          
-          
-        },
-        ${item?.rangehigh},
-        ${item?.rangelow},
-        ${item?.dirsignal}",
-        ${item?.signaltime !== "NULL" ? `"${item?.signaltime}"` : item?.signaltime},
-        ${item?.tgthit === "Yes" ? "1" : item?.tgthit === "No" ? "0" : item?.tgthit},
-        ${item?.tgthittime !== "NULL" ? `"${item?.tgthittime}"` : item?.tgthittime},
-        ${item?.notes !== "NULL" ? `"${item?.notes}"` : item?.notes},
-        ${item?.imagepath !== "NULL" ? `"${item?.imagepath}"` : item?.imagepath}
-      ]`
-      )
+      //eslint-disable-next-line
+      const response = (await executeQuery("UPDATE spy SET date = ?, rangehigh = ?, rangelow = ?, dirsignal = ?, signaltime = ?, tgthit = ?, tgthittime = ?, notes = ?, imagepath = ? WHERE date = ?", [item.newdate, item.rangehigh, item.rangelow, item.dirsignal, item.signaltime, item.tgthit, item.tgthittime, item.notes, item.imagepath, item.originaldate])) as QueryResponseType
 
       //eslint-disable-next-line
       /* const response = (await executeQuery(`INSERT INTO spy (date, rangehigh, rangelow, dirsignal, signaltime, tgthit, tgthittime, notes, imagepath) VALUES ("${item?.date}", "${item?.rangehigh}", "${item?.rangelow}", "${item?.dirsignal}", ${item?.signaltime !== "NULL" ? `"${item?.signaltime}"` : item?.signaltime}, ${item?.tgthit === "Yes" ? "1" : item?.tgthit === "No" ? "0" : item?.tgthit}, ${item?.tgthittime !== "NULL" ? `"${item?.tgthittime}"` : item?.tgthittime}, ${item?.notes !== "NULL" ? `"${item?.notes}"` : item?.notes}, ${item?.imagepath !== "NULL" ? `"${item?.imagepath}"` : item?.imagepath})`)) as QueryResponseType */
@@ -120,7 +99,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.log(`Response from the DB Operation: ${response.error}`)
         throw { message: "error", errors: response.error }
       }
-      res.status(200).json({ message: "success" })
+
+      // Format Data Payload to Send Back to the Client
+
+      const dateObj = new Date(item.newdate)
+      const ClientReadyEditedAndSavedItem = {
+        originalDate: item.originaldate, // YYYY-MM-DD
+        date: dateObj.toLocaleDateString("en-CA", {
+          timeZone: "UTC"
+        }), // YYYY-MM-DD
+        displayDate: dateObj.toLocaleDateString("en-US", {
+          timeZone: "UTC",
+          year: "2-digit",
+          month: "2-digit",
+          day: "2-digit"
+        }), // YYYY-MM-DD
+        rangeHigh: item.rangehigh === "" || item.rangehigh === "NULL" ? "" : typeof item.rangehigh === "string" ? (Math.round(parseFloat(item.rangehigh) * 100) / 100).toFixed(2) : "",
+        rangeLow: item.rangelow === "" || item.rangelow === "NULL" ? "" : typeof item.rangelow === "string" ? (Math.round(parseFloat(item.rangelow) * 100) / 100).toFixed(2) : "",
+        dirSignal: typeof item.dirsignal === "object" ? "" : item.dirsignal === "" ? "" : item.dirsignal,
+        signalTime: typeof item.signaltime === "object" ? "" : item.signaltime,
+        tgtHit: typeof item.tgthit === "object" ? "" : item.tgthit,
+        tgtHitTime: typeof item.tgthittime === "object" ? "" : item.tgthittime,
+        notes: typeof item.notes === "object" ? "" : item.notes
+      }
+
+      res.status(200).json({ message: "success", data: ClientReadyEditedAndSavedItem })
     } catch (err) {
       res.status(422).json({ message: "error", errors: err })
     }

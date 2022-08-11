@@ -15,7 +15,7 @@ interface ParamsType {
 }
 
 const AppDataGrid: React.FC = () => {
-  const manageStateContext = useContext(ManageStateContext)
+  const manageState = useContext(ManageStateContext)
 
   const columns: GridColDef[] = [
     { field: "date", headerName: "Date", width: 100, type: "date" },
@@ -44,7 +44,7 @@ const AppDataGrid: React.FC = () => {
 
   let rows: GridRowsProp = []
 
-  rows = manageStateContext.spy.map((item, index) => {
+  rows = manageState.spy.map((item, index) => {
     return {
       id: index + 1, //
       date: item.displayDate,
@@ -52,10 +52,10 @@ const AppDataGrid: React.FC = () => {
       tgthit: item.tgtHit === 1 || item.tgtHit === "Yes" ? "Yes" : item.tgtHit === 0 || item.tgtHit === "No" ? "No" : "n/a",
       range: typeof item.rangeHigh === "number" && typeof item.rangeLow === "number" ? (Math.round((item.rangeHigh - item.rangeLow) * 100) / 100).toFixed(2) : "",
       rangehigh: typeof item.rangeHigh === "number" ? (Math.round(item.rangeHigh * 100) / 100).toFixed(2) : "",
-      rangelow: typeof item.rangeHigh === "number" ? (Math.round(item.rangeLow * 100) / 100).toFixed(2) : "",
-      signal: item.dirSignal !== "NULL" ? item.dirSignal : "n/a",
-      signaltime: item.signalTime ? item.signalTime.slice(0, 5) : "n/a",
-      tgthittime: item.tgtHitTime ? item.tgtHitTime?.slice(0, 5) : "n/a"
+      rangelow: typeof item.rangeLow === "number" ? (Math.round(item.rangeLow * 100) / 100).toFixed(2) : "",
+      signal: item.dirSignal === "NULL" || item.dirSignal === "" ? "n/a" : item.dirSignal,
+      signaltime: item.signalTime || item.signalTime === "00:00:00" ? item.signalTime.slice(0, 5) : "n/a",
+      tgthittime: item.tgtHitTime || item.tgtHitTime === "00:00:00" ? item.tgtHitTime?.slice(0, 5) : "n/a"
     }
   })
 

@@ -2,7 +2,7 @@ import { useContext } from "react"
 import { ManageDispatchContext } from "../../store/ManageContext"
 
 // types
-import { ResponseType, DataPointType } from "../../lib/types"
+import { ResponseType, DataPointType, UpdatedDataPointType } from "../../lib/types"
 
 // mui
 import DialogTitle from "@mui/material/DialogTitle"
@@ -13,7 +13,6 @@ import DialogContentText from "@mui/material/DialogContentText"
 import Button from "@mui/material/Button"
 
 const sendDeleteRequest = async (payload: string[]) => {
-  console.log("payload: ", payload)
   try {
     const response = await fetch("/api/delete-item", {
       method: "DELETE",
@@ -23,7 +22,7 @@ const sendDeleteRequest = async (payload: string[]) => {
       }
     })
     const responseData = (await response.json()) as ResponseType
-    console.log(responseData)
+
     if (responseData.message === "success") {
       return { message: "success" }
     }
@@ -38,38 +37,31 @@ const sendDeleteRequest = async (payload: string[]) => {
 
 interface DeleteDialogProps {
   isDeleteOpen: boolean
-  deleteSelectedValue: string | undefined
-  onDeleteClose: (value: string | undefined) => void
-  item: DataPointType
-  setDeleteSelectedValue: React.Dispatch<React.SetStateAction<string | undefined>>
+  handleDeleteClose: () => void
+  item: DataPointType | UpdatedDataPointType
+  //setDeleteSelectedValue: React.Dispatch<React.SetStateAction<string | undefined>>
 }
 
-const DeleteDialog: React.FC<DeleteDialogProps> = ({ onDeleteClose, deleteSelectedValue, isDeleteOpen, item }) => {
+const DeleteDialog: React.FC<DeleteDialogProps> = ({ handleDeleteClose, isDeleteOpen, item }) => {
   //console.log("item: ", item)
 
   const manageDispatch = useContext(ManageDispatchContext)
 
-  const handleDeleteClose = () => {
-    onDeleteClose(deleteSelectedValue)
-  }
-
   const handleDeleteAccept = () => {
-    let itemToDelete: string | undefined
     sendDeleteRequest([item.date])
       .then(res => {
         if (res?.message === "success") {
-          console.log(item.date)
           manageDispatch({ type: "removeItem", value: item.date })
         }
       })
       .catch(err => console.log(err))
-    onDeleteClose(itemToDelete)
+    handleDeleteClose()
   }
 
   return (
     <Dialog onClose={handleDeleteClose} open={isDeleteOpen}>
       {/*  eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
-      <DialogTitle>Delete {item.displayDate}?</DialogTitle>
+      <DialogTitle>Delete {item?.displayDate ? item.displayDate : "Item"}?</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">This action cannot be undone</DialogContentText>
       </DialogContent>

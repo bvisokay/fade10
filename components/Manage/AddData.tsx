@@ -263,7 +263,6 @@ const AddData: React.FC = () => {
             if (dateInputRef && dateInputRef.current) {
               dateInputRef.current.focus()
             }
-            console.log(data.data)
             if (data.data && typeof data.data !== "string") manageDispatch({ type: "addItem", value: data.data })
           }
         } catch (err) {

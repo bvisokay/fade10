@@ -1,11 +1,11 @@
 import React, { createContext } from "react"
 import { useImmerReducer } from "use-immer"
-import { DataPointType } from "../lib/types"
+import { DataPointType, UpdatedDataPointType } from "../lib/types"
 
-type ManageActionTypes = { type: "removeItem"; value: string } | { type: "addItem"; value: DataPointType } | { type: "addMultipleItems"; value: DataPointType[] } | { type: "removeAllItems" } | { type: "updateItem"; value: DataPointType }
+type ManageActionTypes = { type: "removeItem"; value: string } | { type: "addItem"; value: DataPointType } | { type: "addMultipleItems"; value: DataPointType[] } | { type: "removeAllItems" } | { type: "updateItem"; value: UpdatedDataPointType }
 
 interface InitialStateType {
-  spy: DataPointType[]
+  spy: DataPointType[] | UpdatedDataPointType[]
 }
 
 const initialState = {
@@ -39,13 +39,20 @@ export const ManageContextProvider: React.FC<ManageCTXProps> = props => {
         draft.spy = []
         return
       case "updateItem":
-        draft.spy = draft.spy.filter((item: DataPointType) => {
-          if (item?.date !== action.value.date) {
-            return item
+        for (const obj of draft.spy) {
+          if (action.value.originalDate === obj.date) {
+            ;(obj.date = action.value.date), //
+              (obj.displayDate = action.value.displayDate),
+              (obj.rangeHigh = +action.value.rangeHigh),
+              (obj.rangeLow = +action.value.rangeLow),
+              (obj.dirSignal = action.value.dirSignal),
+              (obj.signalTime = action.value.signalTime),
+              (obj.tgtHit = action.value.tgtHit),
+              (obj.tgtHitTime = action.value.tgtHitTime),
+              (obj.notes = action.value.notes)
           }
-        })
-        alert("hello")
-        // need to add and re-sort
+          break
+        }
         return
       default:
         throw new Error("Bad action of some sort")

@@ -69,8 +69,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       return {
         date: item.date.toString(),
-        rangehigh: item.rangeHigh,
-        rangelow: item.rangeLow,
+        rangehigh: typeof item.rangeHigh === "string" ? (Math.round(parseFloat(item.rangeHigh) * 100) / 100).toFixed(2) : (Math.round(item.rangeHigh * 100) / 100).toFixed(2),
+        rangelow: typeof item.rangeLow === "string" ? (Math.round(parseFloat(item.rangeLow) * 100) / 100).toFixed(2) : (Math.round(item.rangeLow * 100) / 100).toFixed(2),
         dirsignal: item.dirSignal,
         signaltime: item.signalTime,
         tgthit: item.tgtHit,
@@ -94,10 +94,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }),
       rangeHigh: cleanedPayload[0]?.rangehigh && typeof cleanedPayload[0].rangehigh === "string" ? parseFloat(cleanedPayload[0].rangehigh) : "",
       rangeLow: cleanedPayload[0]?.rangelow && typeof cleanedPayload[0].rangelow === "string" ? parseFloat(cleanedPayload[0].rangelow) : "",
-      dirSignal: cleanedPayload[0]?.dirsignal && cleanedPayload[0].dirsignal !== "NULL" ? cleanedPayload[0].dirsignal : "n/a",
-      signalTime: cleanedPayload[0]?.signaltime && cleanedPayload[0].signaltime !== "NULL" ? cleanedPayload[0].signaltime : "n/a",
-      tgtHit: cleanedPayload[0]?.tgthit && cleanedPayload[0]?.tgthit !== "NULL" ? cleanedPayload[0].tgthit : "n/a",
-      tgtHitTime: cleanedPayload[0]?.tgthittime && cleanedPayload[0]?.tgthittime !== "NULL" ? cleanedPayload[0].tgthittime : "n/a",
+      dirSignal: cleanedPayload[0]?.dirsignal && cleanedPayload[0].dirsignal !== "NULL" ? cleanedPayload[0].dirsignal : "",
+      signalTime: cleanedPayload[0]?.signaltime && cleanedPayload[0].signaltime !== "NULL" ? cleanedPayload[0].signaltime : "",
+      tgtHit: cleanedPayload[0]?.tgthit && cleanedPayload[0]?.tgthit !== "NULL" ? cleanedPayload[0].tgthit : "",
+      tgtHitTime: cleanedPayload[0]?.tgthittime && cleanedPayload[0]?.tgthittime !== "NULL" ? cleanedPayload[0].tgthittime : "",
       notes: cleanedPayload[0]?.notes && cleanedPayload[0].notes !== "NULL" ? cleanedPayload[0].notes : ""
     }
 

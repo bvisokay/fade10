@@ -14,8 +14,6 @@ type PropTypes = {
 }
 
 const Data: React.FC<PropTypes> = props => {
-  console.log(props.spy)
-
   const [spy, setSpy] = useState<DataPointType[]>([])
 
   useEffect(() => {
@@ -44,9 +42,9 @@ const Data: React.FC<PropTypes> = props => {
       col3: item.rangeHigh.toFixed(2),
       col4: item.rangeLow.toFixed(2),
       col5: typeof item.rangeHigh === "number" && typeof item.rangeLow === "number" ? (Math.round((item.rangeHigh - item.rangeLow) * 100) / 100).toFixed(2) : "",
-      col6: item.dirSignal !== "NULL" ? item.dirSignal : "n/a",
-      col7: item.signalTime ? item.signalTime.slice(0, 5) : "n/a",
-      col8: item.tgtHitTime ? item.tgtHitTime?.slice(0, 5) : "n/a"
+      col6: item.dirSignal === "NULL" || item.dirSignal === "" ? "n/a" : item.dirSignal,
+      col7: item.signalTime && item.signalTime !== "00:00:00" ? item.signalTime.slice(0, 5) : "n/a",
+      col8: item.tgtHitTime && item.tgtHitTime !== "00:00:00" ? item.tgtHitTime?.slice(0, 5) : "n/a"
     }
   })
 

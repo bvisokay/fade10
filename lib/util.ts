@@ -27,11 +27,11 @@ export const fetchAllData = async (dir = 1) => {
           }), // YYYY-MM-DD
           rangeHigh: item.rangehigh,
           rangeLow: item.rangelow,
-          dirSignal: typeof item.dirsignal === "object" ? "n/a" : item.dirsignal === "" ? "n/a" : item.dirsignal,
-          signalTime: typeof item.signaltime === "object" ? "n/a" : item.signaltime,
-          tgtHit: typeof item.tgthit === "object" ? "n/a" : item.tgthit,
-          tgtHitTime: typeof item.tgthittime === "object" ? "n/a " : item.tgthittime,
-          notes: typeof item.notes === "object" ? "" : item.notes
+          dirSignal: typeof item.dirsignal === "object" || item.dirsignal === "NULL" ? "" : item.dirsignal === "" ? "" : item.dirsignal,
+          signalTime: typeof item.signaltime === "object" || item.signaltime === "NULL" ? "" : item.signaltime,
+          tgtHit: typeof item.tgthit === "object" || item.tgthit === "NULL" ? "" : item.tgthit,
+          tgtHitTime: typeof item.tgthittime === "object" || item.tgthittime === "NULL" ? "" : item.tgthittime,
+          notes: typeof item.notes === "object" || item.notes === "NULL" ? "" : item.notes
         }
       })
     }

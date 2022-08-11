@@ -11,7 +11,8 @@ const db = mysql({
   }
 })
 
-export default async function executeQuery(query: string, payload?: string) {
+// payload is a string in the case of delete and an array of strings in the update query
+export default async function executeQuery(query: string, payload?: unknown[] | string) {
   try {
     const results = await db.query(query, payload)
     await db.end()

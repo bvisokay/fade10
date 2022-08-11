@@ -28,6 +28,12 @@ export interface ResponseType {
   errors?: string
 }
 
+export interface ItemUpdatedResponseType {
+  message: string
+  data?: string | UpdatedDataPointType
+  errors?: string
+}
+
 // from execute query
 export type QueryResponseType = {
   results: unknown
@@ -35,10 +41,24 @@ export type QueryResponseType = {
 }
 
 export type DataPointType = {
+  originalDate?: string
   date: string
   displayDate: string
   rangeHigh: number
   rangeLow: number
+  dirSignal: string
+  signalTime: string
+  tgtHit: string | number
+  tgtHitTime: string
+  notes: string
+}
+
+export type UpdatedDataPointType = {
+  originalDate: string
+  date: string
+  displayDate: string
+  rangeHigh: string | number
+  rangeLow: string | number
   dirSignal: string
   signalTime: string
   tgtHit: string | number
@@ -84,10 +104,22 @@ export type TradingDay3Type = {
 }
 
 export type EditedTradingDayType = {
-  date: string
-  formattedDate?: Date
-  rangeHigh: number | string
-  rangeLow: number | string
+  originalDate: string
+  newDate: string
+  rangeHigh: string | number
+  rangeLow: string | number
+  dirSignal: string
+  signalTime: string
+  tgtHit: string | number
+  tgtHitTime: string
+  notes: string
+}
+
+export type EditedTradingDayTypeForDb = {
+  originalDate: string
+  newDate: string
+  rangeHigh: string | number
+  rangeLow: string | number
   dirSignal: string | null
   signalTime: string | null
   tgtHit: string | number | null

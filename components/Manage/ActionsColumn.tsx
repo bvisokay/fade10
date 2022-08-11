@@ -16,11 +16,9 @@ interface PropTypes {
 }
 
 const ActionsColumn: React.FC<PropTypes> = ({ index }) => {
-  const manageStateContext = useContext(ManageStateContext)
+  const manageState = useContext(ManageStateContext)
   const [isEditOpen, setIsEditOpen] = useState(false)
-  const [editSelectedValue /* setSelectedValue */] = useState("Hello Edit")
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
-  const [deleteSelectedValue, setDeleteSelectedValue] = useState<string | undefined>("")
 
   const handleEditOpen = () => {
     setIsEditOpen(true)
@@ -47,11 +45,11 @@ const ActionsColumn: React.FC<PropTypes> = ({ index }) => {
             <IconButton color="secondary" aria-label="edit" onClick={handleEditOpen}>
               <EditIcon style={{ color: "dodgerblue" }} />
             </IconButton>
-            <EditDialog editSelectedValue={editSelectedValue} isEditOpen={isEditOpen} onEditClose={handleEditClose} item={manageStateContext.spy[index - 1]} />
+            <EditDialog isEditOpen={isEditOpen} handleEditClose={handleEditClose} item={manageState.spy[index - 1]} />
             <IconButton color="secondary" aria-label="delete" onClick={handleDeleteOpen} style={{ marginLeft: "4px" }}>
               <DeleteIcon style={{ color: "crimson" }} />
             </IconButton>
-            <DeleteDialog deleteSelectedValue={deleteSelectedValue} setDeleteSelectedValue={setDeleteSelectedValue} isDeleteOpen={isDeleteOpen} onDeleteClose={handleDeleteClose} item={manageStateContext.spy[index - 1]} />
+            <DeleteDialog isDeleteOpen={isDeleteOpen} handleDeleteClose={handleDeleteClose} item={manageState.spy[index - 1]} />
           </>
         }
       />
