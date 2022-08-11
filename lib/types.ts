@@ -66,43 +66,6 @@ export type UpdatedDataPointType = {
   notes: string
 }
 
-export type TradingDayType = {
-  date: string
-  formattedDate?: Date
-  rangeHigh: number | string
-  rangeLow: number | string
-  dirSignal: string | null
-  signalTime: string | null
-  tgtHit: string | null
-  tgtHitTime: string | null
-  notes: string | null
-}
-
-export type TradingDay2Type = {
-  date: string
-  formattedDate?: Date
-  stringDate: string
-  rangeHigh: number | string
-  rangeLow: number | string
-  dirSignal: string | null
-  signalTime: string | null
-  tgtHit: number | null
-  tgtHitTime: string | null
-  notes: string | null
-}
-
-export type TradingDay3Type = {
-  date: string
-  formattedDate: Date
-  rangeHigh: number | string
-  rangeLow: number | string
-  dirSignal: string | null
-  signalTime: string | null
-  tgtHit: string | number | null
-  tgtHitTime: string | null
-  notes: string | null
-}
-
 export type EditedTradingDayType = {
   originalDate: string
   newDate: string
