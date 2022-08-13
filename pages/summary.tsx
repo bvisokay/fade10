@@ -1,15 +1,23 @@
+import { useEffect, useState } from "react"
 import { GetServerSidePropsContext } from "next"
 import { getSession } from "next-auth/react"
-import { Typography, Box } from "@mui/material"
+
+//types
 import { DataPointType, FetchAllDataResultType } from "../lib/types"
-import { useEffect, useState } from "react"
-import BarChart from "../components/Charts/BarChart"
-//import DoughnutChart from "../components/Charts/DoughnutChart"
-import { breakpoints } from "../styles/breakpoints"
-import styled from "@emotion/styled"
+
+// util functions
+import { getSignalRates } from "../lib/helpers"
 import { fetchAllData } from "../lib/util"
 
-// styles
+// chart comps
+import BarChart from "../components/Charts/BarChart"
+import DoughnutChart from "../components/Charts/DoughnutChart"
+import HorizontalBarChart from "../components/Charts/HorizontalBarChart"
+
+//styles
+import { Typography, Box } from "@mui/material"
+import { breakpoints } from "../styles/breakpoints"
+import styled from "@emotion/styled"
 import { Highlight } from "../styles/GlobalComponents"
 
 type PropTypes = {
@@ -26,37 +34,38 @@ const TitleArea = styled.div`
   }
 `
 
+const DoughBoxContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+  margin: 4rem auto;
+  @media ${breakpoints.sm} {
+    flex-direction: row;
+    //border: 1px solid crimson;
+  }
+`
+
+const DoughBox = styled.div`
+  // has the title so this can't be the grid
+  //border: 1px solid dodgerblue;
+  max-width: 200px;
+  padding: 2rem 0;
+  @media ${breakpoints.sm} {
+    flex-direction: row;
+    padding: 0;
+    //border: 1px solid crimson;
+  }
+`
+
 const Summary = (props: PropTypes) => {
-  const periods = [5, 20, 60, 200]
+  const periods = [5, 20, 60, 120, 240]
   const [spy, setSpy] = useState<DataPointType[]>([])
 
   useEffect(() => {
     setSpy(props.spy)
     //eslint-disable-next-line
   }, [])
-
-  const getWinRate = (period: number) => {
-    if (spy.length) {
-      const results = spy.slice(period * -1).reduce((currentTotal, item) => {
-        if (typeof item.tgtHit !== "object" && typeof item.tgtHit === "number") {
-          return item.tgtHit + currentTotal
-        } else return currentTotal
-      }, 0)
-      return results
-      //return period
-    } else {
-      return period * -1
-    }
-  }
-
-  const getLongSignalRate = (period: number) => {
-    const results = spy.slice(period * -1).reduce((currentTotal, item) => {
-      if (item.dirSignal !== "object" && item.dirSignal === "Long") {
-        return 1 + currentTotal
-      } else return currentTotal
-    }, 0)
-    return results
-  }
 
   return (
     <>
@@ -70,38 +79,52 @@ const Summary = (props: PropTypes) => {
           <em>Data updated through: {spy.length ? spy[spy.length - 1].displayDate : "Come again"}</em>
         </Typography>
       </TitleArea>
+      <br />
       <hr />
-
       {periods.map((period, index) => {
         if (period > spy.length) {
           period = spy.length
         }
-        const wins = getWinRate(period)
-        const longRate = getLongSignalRate(period)
+        const signalRates = getSignalRates(period, spy)
+
         return (
           <Box mt={10} mb={10} key={index}>
             <Typography mb={4} variant="h5">
               <strong>Last {period} Trading Days</strong>
-              {/* {wins && wins >= 1 ? `${Math.round((wins / period) * 100)}% (${wins} of ${period})` : ""} */}
             </Typography>
-            <Typography mb={4} variant="body1">
-              <strong>Hit Rate: </strong>
-              {wins && wins >= 1 ? `${Math.round((wins / period) * 100)}% (${wins} of ${period})` : ""}
+
+            <Typography mb={4} variant={"h5"} sx={{ textAlign: "center" }}>
+              Signal Breakdown
             </Typography>
-            <Typography mb={4} variant="body1">
-              <strong>Signal Rate: </strong>
-              {longRate && longRate >= 1 ? `${Math.round((longRate / period) * 100)}% Long (${longRate} of ${period})` : ""}
-            </Typography>
+
+            <HorizontalBarChart period={period} signalRates={signalRates} />
+
             {spy.length && (
-              <Box mt={3} mb={3}>
-                <BarChart chartData={spy} daysBack={period} />
-              </Box>
+              <>
+                <Typography variant={"h5"} sx={{ textAlign: "center" }}>
+                  Hit Rates
+                </Typography>
+                <DoughBoxContainer>
+                  <DoughBox>
+                    <Typography sx={{ textAlign: "center" }}>Overall</Typography>
+                    <DoughnutChart chartData={spy} daysBack={period} />
+                  </DoughBox>
+
+                  <DoughBox>
+                    <Typography sx={{ textAlign: "center" }}>Long Only</Typography>
+                    <DoughnutChart chartData={spy} daysBack={period} signal={"Long"} />
+                  </DoughBox>
+                  <DoughBox>
+                    <Typography sx={{ textAlign: "center" }}>Short Only</Typography>
+                    <DoughnutChart chartData={spy} daysBack={period} signal={"Short"} />
+                  </DoughBox>
+                </DoughBoxContainer>
+                <Box mt={3} mb={6}>
+                  <BarChart chartData={spy} daysBack={period} />
+                </Box>
+                <hr />
+              </>
             )}
-            {/*    {spy.length && (
-              <Box width={200} height={200} mt={3} mb={3}>
-                <DoughnutChart chartData={spy} daysBack={period} />
-              </Box>
-            )} */}
           </Box>
         )
       })}

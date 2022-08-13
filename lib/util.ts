@@ -54,3 +54,13 @@ export const fetchAllData = async (dir = 1) => {
     return { message: "error", errors: err }
   }
 }
+
+/* 
+const getLongSignalRate = (period: number) => {
+  const results = spy.slice(period * -1).reduce((currentTotal, item) => {
+    if (item.dirSignal !== "object" && item.dirSignal === "Long") {
+      return 1 + currentTotal
+    } else return currentTotal
+  }, 0)
+  return results
+} */

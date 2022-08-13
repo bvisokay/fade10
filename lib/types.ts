@@ -16,6 +16,16 @@ export interface FetchAllDataResultType {
   errors?: unknown | string
 }
 
+export interface GetSignalRatesReponse {
+  message: string
+  longOccurrences?: number
+  longPercentage?: number
+  shortOccurrences?: number
+  shortPercentage?: number
+  otherOccurrences?: number
+  otherPercentage?: number
+}
+
 export interface RegAttemptTypes {
   username: string
   email: string
