@@ -8,7 +8,10 @@ import styled from "@emotion/styled"
 // mui
 import Button from "@mui/material/Button"
 import TextField from "@mui/material/TextField"
-import MenuItem from "@mui/material/MenuItem"
+import Box from "@mui/material/Box"
+import InputLabel from "@mui/material/InputLabel"
+import FormControl from "@mui/material/FormControl"
+import NativeSelect from "@mui/material/NativeSelect"
 
 const Form = styled.form`
   border: 1px solid #999;
@@ -326,25 +329,27 @@ const AddData: React.FC = () => {
             dispatch({ type: "rangeLowCheck", value: e.target.value })
           }}
         />
-        <TextField
-          margin="normal"
-          fullWidth
-          hiddenLabel
-          size="small"
-          id="outlined-select-currency"
-          select
-          label="Signal"
-          value={state.dirSignal.value}
-          onChange={e => {
-            dispatch({ type: "dirSignalCheck", value: e.target.value })
-          }}
-        >
-          <MenuItem value="">
-            <em>Select</em>
-          </MenuItem>
-          <MenuItem value={"Long"}>{"Long"}</MenuItem>
-          <MenuItem value={"Short"}>{"Short"}</MenuItem>
-        </TextField>
+        <Box sx={{ minWidth: 120, mt: 2, mb: 2, pl: 1, pr: 1 }}>
+          <FormControl fullWidth>
+            <InputLabel shrink={true} variant="standard" htmlFor="uncontrolled-native">
+              Signal
+            </InputLabel>
+            <NativeSelect
+              value={state.dirSignal.value}
+              inputProps={{
+                name: "Signal",
+                id: "uncontrolled-native"
+              }}
+              onChange={e => {
+                dispatch({ type: "dirSignalCheck", value: e.target.value })
+              }}
+            >
+              <option value={""}>Select</option>
+              <option value={"Long"}>Long</option>
+              <option value={"Short"}>Short</option>
+            </NativeSelect>
+          </FormControl>
+        </Box>
         <TextField
           InputLabelProps={{ shrink: true }}
           margin="normal"
@@ -361,25 +366,27 @@ const AddData: React.FC = () => {
             dispatch({ type: "signalTimeCheck", value: e.target.value })
           }}
         />
-        <TextField
-          margin="normal"
-          fullWidth
-          hiddenLabel
-          size="small"
-          id="outlined-select-currency"
-          select
-          label="Target Hit"
-          value={state.tgtHit.value}
-          onChange={e => {
-            dispatch({ type: "tgtHitCheck", value: e.target.value })
-          }}
-        >
-          <MenuItem value="">
-            <em>Select</em>
-          </MenuItem>
-          <MenuItem value={"Yes"}>{"Yes"}</MenuItem>
-          <MenuItem value={"No"}>{"No"}</MenuItem>
-        </TextField>
+        <Box sx={{ minWidth: 120, mt: 2, mb: 2, pl: 1, pr: 1 }}>
+          <FormControl fullWidth>
+            <InputLabel shrink={true} variant="standard" htmlFor="uncontrolled-native">
+              Target Hit
+            </InputLabel>
+            <NativeSelect
+              inputProps={{
+                name: "Target Hit",
+                id: "uncontrolled-native"
+              }}
+              value={state.tgtHit.value}
+              onChange={e => {
+                dispatch({ type: "tgtHitCheck", value: e.target.value })
+              }}
+            >
+              <option value={""}>Select</option>
+              <option value={"Yes"}>Yes</option>
+              <option value={"No"}>No</option>
+            </NativeSelect>
+          </FormControl>
+        </Box>
         <TextField
           InputLabelProps={{ shrink: true }}
           margin="normal"
