@@ -410,7 +410,8 @@ const AddData: React.FC = () => {
             dispatch({ type: "notesCheck", value: e.target.value })
           }}
         />
-        <Button sx={{ mt: 3, mb: 2 }} variant="contained" onClick={submitHandler}>
+
+        <Button type="submit" sx={{ mt: 3, mb: 2 }} variant="contained">
           Submit
         </Button>
       </Form>
