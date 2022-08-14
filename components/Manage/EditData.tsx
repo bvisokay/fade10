@@ -6,8 +6,11 @@ import { ManageDispatchContext } from "../../store/ManageContext"
 // mui
 import Button from "@mui/material/Button"
 import TextField from "@mui/material/TextField"
-import MenuItem from "@mui/material/MenuItem"
 import DialogActions from "@mui/material/DialogActions"
+import Box from "@mui/material/Box"
+import InputLabel from "@mui/material/InputLabel"
+import FormControl from "@mui/material/FormControl"
+import NativeSelect from "@mui/material/NativeSelect"
 
 type AddDataActionTypes = { type: "dateCheck"; value: string } | { type: "rangeHighCheck"; value: string | number } | { type: "rangeLowCheck"; value: string | number } | { type: "dirSignalCheck"; value: string } | { type: "signalTimeCheck"; value: string } | { type: "tgtHitCheck"; value: string | number } | { type: "tgtHitTimeCheck"; value: string } | { type: "notesCheck"; value: string } | { type: "submitCount"; value: number } | { type: "isSaving"; value: boolean } | { type: "submitForm" }
 
@@ -347,23 +350,27 @@ const EditData: React.FC<EditDataProps> = ({ item, handleEditClose }) => {
           dispatch({ type: "rangeLowCheck", value: e.target.value })
         }}
       />
-      <TextField
-        margin="normal"
-        fullWidth
-        hiddenLabel
-        size="small"
-        id="outlined-select-currency"
-        select
-        label="Signal"
-        value={state.dirSignal.value}
-        onChange={e => {
-          dispatch({ type: "dirSignalCheck", value: e.target.value })
-        }}
-      >
-        <MenuItem value={""}>{"Select"}</MenuItem>
-        <MenuItem value={"Long"}>{"Long"}</MenuItem>
-        <MenuItem value={"Short"}>{"Short"}</MenuItem>
-      </TextField>
+      <Box sx={{ minWidth: 120, mt: 2, mb: 2, pl: 1, pr: 1 }}>
+        <FormControl fullWidth>
+          <InputLabel shrink={true} variant="standard" htmlFor="uncontrolled-native">
+            Signal
+          </InputLabel>
+          <NativeSelect
+            value={state.dirSignal.value}
+            inputProps={{
+              name: "Signal",
+              id: "uncontrolled-native"
+            }}
+            onChange={e => {
+              dispatch({ type: "dirSignalCheck", value: e.target.value })
+            }}
+          >
+            <option value={""}>Select</option>
+            <option value={"Long"}>Long</option>
+            <option value={"Short"}>Short</option>
+          </NativeSelect>
+        </FormControl>
+      </Box>
       <TextField
         InputLabelProps={{ shrink: true }}
         margin="normal"
@@ -380,23 +387,27 @@ const EditData: React.FC<EditDataProps> = ({ item, handleEditClose }) => {
           dispatch({ type: "signalTimeCheck", value: e.target.value })
         }}
       />
-      <TextField
-        margin="normal"
-        fullWidth
-        hiddenLabel
-        size="small"
-        id="outlined-select-currency"
-        select
-        label="Target Hit"
-        value={state.tgtHit.value}
-        onChange={e => {
-          dispatch({ type: "tgtHitCheck", value: e.target.value })
-        }}
-      >
-        <MenuItem value={""}>{"Select"}</MenuItem>
-        <MenuItem value={"Yes"}>{"Yes"}</MenuItem>
-        <MenuItem value={"No"}>{"No"}</MenuItem>
-      </TextField>
+      <Box sx={{ minWidth: 120, mt: 2, mb: 2, pl: 1, pr: 1 }}>
+        <FormControl fullWidth>
+          <InputLabel shrink={true} variant="standard" htmlFor="uncontrolled-native">
+            Target Hit
+          </InputLabel>
+          <NativeSelect
+            inputProps={{
+              name: "Target Hit",
+              id: "uncontrolled-native"
+            }}
+            value={state.tgtHit.value}
+            onChange={e => {
+              dispatch({ type: "tgtHitCheck", value: e.target.value })
+            }}
+          >
+            <option value={""}>Select</option>
+            <option value={"Yes"}>Yes</option>
+            <option value={"No"}>No</option>
+          </NativeSelect>
+        </FormControl>
+      </Box>
       <TextField
         InputLabelProps={{ shrink: true }}
         margin="normal"
