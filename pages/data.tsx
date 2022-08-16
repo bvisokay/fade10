@@ -21,7 +21,7 @@ const Data: React.FC<PropTypes> = props => {
   }, [])
 
   const columns: GridColDef[] = [
-    { field: "col1", headerName: "Date", width: 100 },
+    { field: "col1", headerName: "Date", width: 100, type: "date" },
     { field: "col2", headerName: "Tgt Hit", width: 65 },
     { field: "col3", headerName: "Range High", width: 100 },
     { field: "col4", headerName: "Range Low", width: 100 },
