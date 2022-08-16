@@ -302,6 +302,7 @@ const AddData: React.FC = () => {
           }}
         />
         <TextField
+          autoComplete="off"
           margin="normal"
           fullWidth
           hiddenLabel
@@ -316,6 +317,7 @@ const AddData: React.FC = () => {
           }}
         />
         <TextField
+          autoComplete="off"
           margin="normal"
           fullWidth
           hiddenLabel
@@ -404,6 +406,7 @@ const AddData: React.FC = () => {
           }}
         />
         <TextField
+          autoComplete="off"
           margin="normal"
           fullWidth
           hiddenLabel
