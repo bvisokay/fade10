@@ -235,7 +235,6 @@ const EditData: React.FC<EditDataProps> = ({ item, handleEditClose }) => {
   const manageDispatch = useContext(ManageDispatchContext)
 
   const submitHandler = (e: React.FormEvent) => {
-    alert("submithandlerRan")
     e.preventDefault()
     dispatch({ type: "submitForm" })
   }
