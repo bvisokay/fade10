@@ -161,6 +161,16 @@ export const SectionVeryNarrow = styled.section`
   border-radius: 10px;
 `
 
+export const TitleArea = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+  @media ${breakpoints.sm} {
+    flex-direction: row;
+  }
+`
+
 export const WrapperNarrow = styled.div`
   max-width: var(--wrapper-width-narrow);
   margin: 0 auto;

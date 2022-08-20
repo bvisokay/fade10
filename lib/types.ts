@@ -38,6 +38,14 @@ export interface ResponseType {
   errors?: string
 }
 
+export type StreakObject = {
+  startDate: string
+  streakLength: number
+  type: string | number
+  //direction: string
+  streakDetails: DataPointType[]
+}
+
 export interface ItemUpdatedResponseType {
   message: string
   data?: string | UpdatedDataPointType

@@ -1,4 +1,4 @@
-import { DataPointType, GetSignalRatesReponse } from "./types"
+import { DataPointType, GetSignalRatesReponse, StreakObject } from "./types"
 
 export const getSignalRates = (period: number, sampleArr: DataPointType[]): GetSignalRatesReponse => {
   let result: GetSignalRatesReponse
@@ -191,4 +191,65 @@ export const getMonthlySummary = (sourceArr: DataPointType[], startDate: string,
     shortHitRate: Number.isNaN(shortHitRate) ? 0 : shortHitRate,
     numOtherDays
   }
+}
+
+export const getStreakResults = (sourceArray: DataPointType[], minStreakNum: number) => {
+  // make sure the inbound data is sorted
+  const sortedSourceArray = sourceArray.sort((a, b) => {
+    if (a.date > b.date) {
+      return 1
+    } else return -1
+  })
+
+  const allStreakResults = []
+
+  // hit streaks
+  for (let i = 0; i < sortedSourceArray.length - 1; i++) {
+    const hitStreakResults = []
+
+    while (sortedSourceArray[i]?.tgtHit === 1) {
+      hitStreakResults.push(sortedSourceArray[i])
+      i++
+    }
+
+    if (hitStreakResults.length >= minStreakNum) {
+      const hitStreakResult: StreakObject = {
+        startDate: hitStreakResults[0].displayDate,
+        streakLength: hitStreakResults.length,
+        type: +hitStreakResults[0].tgtHit === 1 ? "Hit" : "Miss",
+        //direction: hitStreakResults[0].dirSignal,
+        streakDetails: hitStreakResults
+      }
+      allStreakResults.push(hitStreakResult)
+    }
+  }
+
+  // miss streaks
+  for (let j = 0; j < sortedSourceArray.length - 1; j++) {
+    const missStreakResults = []
+
+    while (sortedSourceArray[j]?.tgtHit === 0) {
+      missStreakResults.push(sortedSourceArray[j])
+      j++
+    }
+
+    if (missStreakResults.length >= minStreakNum) {
+      const missStreakResult: StreakObject = {
+        startDate: missStreakResults[0].displayDate,
+        streakLength: missStreakResults.length,
+        type: +missStreakResults[0].tgtHit === 1 ? "Hit" : "Miss",
+        //direction: missStreakResults[0].dirSignal,
+        streakDetails: missStreakResults
+      }
+      allStreakResults.push(missStreakResult)
+    }
+  }
+
+  if (allStreakResults.length)
+    return allStreakResults.sort((a, b) => {
+      if (a.streakLength < b.streakLength) {
+        return 1
+      } else return -1
+    })
+  else return []
 }

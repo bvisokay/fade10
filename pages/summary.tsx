@@ -25,21 +25,11 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import { Typography, Box } from "@mui/material"
 import { breakpoints } from "../styles/breakpoints"
 import styled from "@emotion/styled"
-import { Highlight } from "../styles/GlobalComponents"
+import { Highlight, TitleArea } from "../styles/GlobalComponents"
 
 type PropTypes = {
   spy: DataPointType[]
 }
-
-const TitleArea = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-direction: column;
-  @media ${breakpoints.sm} {
-    flex-direction: row;
-  }
-`
 
 const DoughBoxContainer = styled.div`
   display: flex;
