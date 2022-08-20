@@ -9,10 +9,17 @@ import { DataPointType, FetchAllDataResultType } from "../lib/types"
 import { getSignalRates } from "../lib/helpers"
 import { fetchAllData } from "../lib/util"
 
-// chart comps
+// chart and other comps
 import BarChart from "../components/Charts/BarChart"
 import DoughnutChart from "../components/Charts/DoughnutChart"
 import HorizontalBarChart from "../components/Charts/HorizontalBarChart"
+import MonthlySummary from "../components/MonthlySummary"
+
+// accordian
+import Accordion from "@mui/material/Accordion"
+import AccordionSummary from "@mui/material/AccordionSummary"
+import AccordionDetails from "@mui/material/AccordionDetails"
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 
 //styles
 import { Typography, Box } from "@mui/material"
@@ -59,7 +66,7 @@ const DoughBox = styled.div`
 `
 
 const Summary = (props: PropTypes) => {
-  const periods = [5, 20, 60, 120, 240]
+  const periods = [20, 60, 240]
   const [spy, setSpy] = useState<DataPointType[]>([])
 
   useEffect(() => {
@@ -81,6 +88,7 @@ const Summary = (props: PropTypes) => {
       </TitleArea>
       <br />
       <hr />
+      <br />
       {periods.map((period, index) => {
         if (period > spy.length) {
           period = spy.length
@@ -88,46 +96,52 @@ const Summary = (props: PropTypes) => {
         const signalRates = getSignalRates(period, spy)
 
         return (
-          <Box mt={10} mb={10} key={index}>
-            <Typography mb={4} variant="h5">
-              <strong>Last {period} Trading Days</strong>
-            </Typography>
-
-            <Typography mb={4} variant={"h5"} sx={{ textAlign: "center" }}>
-              Signal Breakdown
-            </Typography>
-
-            <HorizontalBarChart period={period} signalRates={signalRates} />
-
-            {spy.length && (
-              <>
-                <Typography variant={"h5"} sx={{ textAlign: "center" }}>
-                  Hit Rates
-                </Typography>
-                <DoughBoxContainer>
-                  <DoughBox>
-                    <Typography sx={{ textAlign: "center" }}>Overall</Typography>
-                    <DoughnutChart chartData={spy} daysBack={period} />
-                  </DoughBox>
-
-                  <DoughBox>
-                    <Typography sx={{ textAlign: "center" }}>Long Only</Typography>
-                    <DoughnutChart chartData={spy} daysBack={period} signal={"Long"} />
-                  </DoughBox>
-                  <DoughBox>
-                    <Typography sx={{ textAlign: "center" }}>Short Only</Typography>
-                    <DoughnutChart chartData={spy} daysBack={period} signal={"Short"} />
-                  </DoughBox>
-                </DoughBoxContainer>
-                <Box mt={3} mb={6}>
-                  <BarChart chartData={spy} daysBack={period} />
-                </Box>
-                <hr />
-              </>
-            )}
-          </Box>
+          <Accordion key={index}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+              <Typography>
+                <strong>Last {period} Trading Days</strong>
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant={"h5"} sx={{ textAlign: "center" }}>
+                Hit Rates
+              </Typography>
+              <DoughBoxContainer>
+                <DoughBox>
+                  <Typography sx={{ textAlign: "center" }}>Overall</Typography>
+                  <DoughnutChart chartData={spy} daysBack={period} />
+                </DoughBox>
+                <DoughBox>
+                  <Typography sx={{ textAlign: "center" }}>Long Only</Typography>
+                  <DoughnutChart chartData={spy} daysBack={period} signal={"Long"} />
+                </DoughBox>
+                <DoughBox>
+                  <Typography sx={{ textAlign: "center" }}>Short Only</Typography>
+                  <DoughnutChart chartData={spy} daysBack={period} signal={"Short"} />
+                </DoughBox>
+              </DoughBoxContainer>
+              <Typography variant={"h5"} sx={{ textAlign: "center" }}>
+                Daily Detail
+              </Typography>
+              <Box mt={3} mb={6}>
+                <BarChart chartData={spy} daysBack={period} />
+              </Box>
+              <Typography mb={4} variant={"h5"} sx={{ textAlign: "center" }}>
+                Signal Breakdown
+              </Typography>
+              <HorizontalBarChart period={period} signalRates={signalRates} />
+            </AccordionDetails>
+          </Accordion>
         )
       })}
+      <br />
+      <br />
+      <Typography variant={"h5"} sx={{ textAlign: "center" }}>
+        Monthly
+      </Typography>
+      <hr />
+      <br />
+      {spy.length && <MonthlySummary spy={spy} />}
     </>
   )
 }

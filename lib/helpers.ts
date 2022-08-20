@@ -93,3 +93,102 @@ export const getWinRateBySignal = (period: number, sampleArr: DataPointType[], s
 
   return result
 }
+
+/*
+ * function really works for any period just pass in the data and dates
+ * Example date format is 2022-08-15
+ * logic is greater than or equal startDate and less than endDate
+ */
+export const getMonthlySummary = (sourceArr: DataPointType[], startDate: string, endDate: string) => {
+  const startDateObj = new Date(startDate)
+  const endDateObj = new Date(endDate)
+
+  const tgtPeriodArr = sourceArr.filter(item => {
+    const itemDateObj = new Date(item.date)
+    if (itemDateObj >= startDateObj && itemDateObj < endDateObj) return item
+  })
+
+  // OVERALL STATS
+
+  const overallHit = tgtPeriodArr.reduce((acc, item) => {
+    if (typeof item.tgtHit === "number" && item.tgtHit === 1) {
+      return 1 + acc
+    } else {
+      return acc
+    }
+  }, 0)
+
+  const signalsActivated = tgtPeriodArr.reduce((acc, item) => {
+    if (item.dirSignal === "Long" || item.dirSignal === "Short") {
+      return 1 + acc
+    } else {
+      return acc
+    }
+  }, 0)
+
+  const overallHitRate = Math.round((overallHit / signalsActivated) * 100)
+
+  // LONG ONLY STATS
+
+  const numLongDays = tgtPeriodArr.reduce((acc, item) => {
+    if (item.dirSignal === "Long") {
+      return 1 + acc
+    } else {
+      return acc
+    }
+  }, 0)
+
+  const numLongHit = tgtPeriodArr.reduce((acc, item) => {
+    if (typeof item.tgtHit === "number" && item.tgtHit === 1 && item.dirSignal === "Long") {
+      return 1 + acc
+    } else {
+      return acc
+    }
+  }, 0)
+
+  const longHitRate = Math.round((numLongHit / numLongDays) * 100)
+
+  // SHORT ONLY STATS
+
+  const numShortDays = tgtPeriodArr.reduce((acc, item) => {
+    if (item.dirSignal === "Short") {
+      return 1 + acc
+    } else {
+      return acc
+    }
+  }, 0)
+
+  const numShortHit = tgtPeriodArr.reduce((acc, item) => {
+    if (typeof item.tgtHit === "number" && item.tgtHit === 1 && item.dirSignal === "Short") {
+      return 1 + acc
+    } else {
+      return acc
+    }
+  }, 0)
+
+  const shortHitRate = Math.round((numShortHit / numShortDays) * 100)
+
+  // UNACTIVATED STATS (RARE)
+
+  const numOtherDays = tgtPeriodArr.reduce((acc, item) => {
+    if (item.dirSignal !== "Short" && item.dirSignal !== "Long") {
+      return 1 + acc
+    } else {
+      return acc
+    }
+  }, 0)
+
+  return {
+    data: tgtPeriodArr,
+    tradingDays: tgtPeriodArr.length,
+    overallHit,
+    overallHitRate: Number.isNaN(overallHitRate) ? 0 : overallHitRate,
+    numLongDays,
+    numLongHit,
+    longHitRate: Number.isNaN(longHitRate) ? 0 : longHitRate,
+    numShortDays,
+    numShortHit,
+    shortHitRate: Number.isNaN(shortHitRate) ? 0 : shortHitRate,
+    numOtherDays
+  }
+}
