@@ -30,10 +30,20 @@ export const ManageContextProvider: React.FC<ManageCTXProps> = props => {
         })
         return
       case "addItem":
-        draft.spy.unshift(action.value)
+        draft.spy.push(action.value)
+        draft.spy.sort((a, b) => {
+          if (a.date < b.date) return 1
+          else if (a.date > b.date) return -1
+          else return 0
+        })
         return
       case "addMultipleItems":
         draft.spy.push(...action.value)
+        draft.spy.sort((a, b) => {
+          if (a.date < b.date) return 1
+          else if (a.date > b.date) return -1
+          else return 0
+        })
         return
       case "removeAllItems":
         draft.spy = []
@@ -53,6 +63,11 @@ export const ManageContextProvider: React.FC<ManageCTXProps> = props => {
           }
           break
         }
+        draft.spy.sort((a, b) => {
+          if (a.date < b.date) return 1
+          else if (a.date > b.date) return -1
+          else return 0
+        })
         return
       default:
         throw new Error("Bad action of some sort")
