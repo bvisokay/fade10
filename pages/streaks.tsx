@@ -51,18 +51,16 @@ const Streaks = (props: PropTypes) => {
         <>
           {streakResults.map(item => {
             return (
-              <>
-                <Card key={item.startDate} sx={{ minWidth: 275, mb: "2rem" }}>
-                  <CardContent>
-                    <Typography variant="h5" component="div">
-                      {item.streakLength}-day {item.type}
-                    </Typography>
-                    <Typography sx={{ mt: 1.5 }} color="text.secondary">
-                      Beginning: {item.startDate}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </>
+              <Card key={item.startDate} sx={{ minWidth: 275, mb: "2rem" }}>
+                <CardContent>
+                  <Typography variant="h5" component="div">
+                    {item.streakLength}-day {item.type}
+                  </Typography>
+                  <Typography sx={{ mt: 1.5 }} color="text.secondary">
+                    Beginning: {item.startDate}
+                  </Typography>
+                </CardContent>
+              </Card>
             )
           })}
         </>
