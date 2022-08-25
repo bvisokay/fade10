@@ -14,8 +14,6 @@ import NativeSelect from "@mui/material/NativeSelect"
 
 type AddDataActionTypes = { type: "dateCheck"; value: string } | { type: "rangeHighCheck"; value: string | number } | { type: "rangeLowCheck"; value: string | number } | { type: "dirSignalCheck"; value: string } | { type: "signalTimeCheck"; value: string } | { type: "tgtHitCheck"; value: string | number } | { type: "tgtHitTimeCheck"; value: string } | { type: "notesCheck"; value: string } | { type: "submitCount"; value: number } | { type: "isSaving"; value: boolean } | { type: "submitForm" }
 
-/* type AddDataActionTypes = { type: "dateCheck"; value: string } | { type: "rangeHighCheck"; value: string } | { type: "rangeLowCheck"; value: string } | { type: "dirSignalCheck"; value: string } | { type: "signalTimeCheck"; value: string } | { type: "tgtHitCheck"; value: string | number } | { type: "tgtHitTimeCheck"; value: string } | { type: "notesCheck"; value: string } | { type: "submitCount"; value: number } | { type: "isSaving"; value: boolean } | { type: "submitForm" } | { type: "clearFields" } */
-
 type InitialStateTypes = {
   date: {
     value: string
@@ -179,7 +177,7 @@ const EditData: React.FC<EditDataProps> = ({ item, handleEditClose }) => {
     rangeLow: item.rangeLow,
     dirSignal: item.dirSignal !== "" && item.dirSignal !== "n/a" && item.dirSignal !== "NULL" ? item.dirSignal : "",
     signalTime: item.signalTime === "n/a" || item.signalTime === "NULL" || item.signalTime === "00:00:00" ? "" : item.signalTime,
-    tgtHit: item.tgtHit !== "" && item.tgtHit !== "NULL" && item.tgtHit !== "n/a" && item.tgtHit !== "00:00:00" ? "" : item.tgtHit,
+    tgtHit: item.tgtHit !== "" && item.tgtHit !== "NULL" && item.tgtHit !== "n/a" && item.tgtHit !== "00:00:00" ? item.tgtHit : "",
     tgtHitTime: item.dirSignal !== "" && item.tgtHitTime !== "NULL" && item.tgtHitTime !== "00:00:00" ? item.tgtHitTime : "",
     notes: item.notes !== "null" && item.notes !== "n/a" ? item.notes : ""
   }
@@ -268,6 +266,7 @@ const EditData: React.FC<EditDataProps> = ({ item, handleEditClose }) => {
 
           if (data.message === "success") {
             if (typeof data.data !== "string") {
+              console.log("data.message === success && typeof data.data !== string")
               //eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               manageDispatch({ type: "updateItem", value: data.data! })
             }
