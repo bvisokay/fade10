@@ -10,8 +10,8 @@ import { fetchAllData } from "../lib/util"
 import { getStreakResults } from "../lib/helpers"
 
 // styles
-
 import { Highlight, TitleArea } from "../styles/GlobalComponents"
+import { motion } from "framer-motion"
 
 // mui
 import { Typography } from "@mui/material"
@@ -45,22 +45,45 @@ const Streaks = (props: PropTypes) => {
           <em>5 days or more</em>
         </Typography>
       </TitleArea>
+
       <br />
       <hr />
+
       {streakResults.length && (
         <>
-          {streakResults.map(item => {
+          {streakResults.map((item, index) => {
             return (
-              <Card key={item.startDate} sx={{ minWidth: 275, mb: "2rem" }}>
-                <CardContent>
-                  <Typography variant="h5" component="div">
-                    {item.streakLength}-day {item.type}
-                  </Typography>
-                  <Typography sx={{ mt: 1.5 }} color="text.secondary">
-                    Beginning: {item.startDate}
-                  </Typography>
-                </CardContent>
-              </Card>
+              <>
+                <motion.div
+                  key={item.startDate}
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    hidden: {
+                      scale: 0.8,
+                      opacity: 0
+                    },
+                    visible: {
+                      scale: 1,
+                      opacity: 1,
+                      transition: {
+                        delay: (index + 1) * 0.05
+                      }
+                    }
+                  }}
+                >
+                  <Card sx={{ minWidth: 275, mb: "2rem" }}>
+                    <CardContent>
+                      <Typography variant="h5" component="div">
+                        {item.streakLength}-day {item.type}
+                      </Typography>
+                      <Typography sx={{ mt: 1.5 }} color="text.secondary">
+                        Beginning: {item.startDate}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </>
             )
           })}
         </>
