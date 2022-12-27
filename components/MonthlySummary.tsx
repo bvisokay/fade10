@@ -13,6 +13,7 @@ const MonthlySummary: React.FC<PropTypes> = ({ spy }) => {
    * more recent on the top
    */
   const tgtMonths = [
+    ["2022-09-01", "2022-10-01"],
     ["2022-08-01", "2022-09-01"],
     ["2022-07-01", "2022-08-01"],
     ["2022-06-01", "2022-07-01"],

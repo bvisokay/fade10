@@ -155,7 +155,7 @@ export const SectionVeryNarrow = styled.section`
   padding: 1rem;
   margin: 0.5rem auto;
   width: 100%;
-  max-width: var(--wrapper-width-very-narrow);
+  max-width: 500px;
   border: 3px solid var(--tertiary);
   //background: var(--transparent-dark);
   border-radius: 10px;
